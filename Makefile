@@ -2,4 +2,4 @@ all:
 	go build -o bin/
 
 run:
-	go run main.go
+	go run main.go serve

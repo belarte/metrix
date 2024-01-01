@@ -1,7 +1,9 @@
 package main
 
-import "github.com/belarte/metrix/server"
+import (
+	"github.com/belarte/metrix/server/cmd"
+)
 
 func main() {
-    server.Run(":8080")
+    cmd.Execute()
 }
