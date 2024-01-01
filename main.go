@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/belarte/metrix/server/cmd"
+	"github.com/belarte/metrix/cmd"
 )
 
 func main() {
