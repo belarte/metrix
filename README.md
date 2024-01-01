@@ -1,0 +1,2 @@
+# metrix
+Learning HTMX+Go
