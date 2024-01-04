@@ -7,12 +7,12 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-    Use:   "metrix",
+	Use: "metrix",
 }
 
 func Execute() {
-    err := rootCmd.Execute()
-    if err != nil {
-        os.Exit(1)
-    }
+	err := rootCmd.Execute()
+	if err != nil {
+		os.Exit(1)
+	}
 }

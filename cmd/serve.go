@@ -6,13 +6,13 @@ import (
 )
 
 var serverCmd = &cobra.Command{
-    Use:   "serve",
-    Short: "Start the server",
-    RunE: func(cmd *cobra.Command, args []string) error {
-        return server.Run(":8080")
-    },
+	Use:   "serve",
+	Short: "Start the server",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return server.Run(":8080")
+	},
 }
 
 func init() {
-    rootCmd.AddCommand(serverCmd)
+	rootCmd.AddCommand(serverCmd)
 }
