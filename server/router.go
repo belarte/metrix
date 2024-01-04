@@ -16,8 +16,8 @@ func handler(templateFileName string) func(http.ResponseWriter, *http.Request) {
     }
 }
 
-func Run(addr string) {
+func Run(addr string) error {
     http.HandleFunc("/", handler("home.tmpl"))
     http.HandleFunc("/manage", handler("manage.tmpl"))
-    log.Fatal(http.ListenAndServe(addr, nil))
+    return http.ListenAndServe(addr, nil)
 }
