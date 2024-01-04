@@ -7,7 +7,7 @@ import (
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
-    t, err := template.ParseFiles("server/main.html")
+    t, err := template.ParseFiles("server/templates/main.tmpl", "server/templates/home.tmpl")
     if err != nil {
         log.Fatal(err)
     }
