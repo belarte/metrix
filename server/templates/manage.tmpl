@@ -1,4 +1,11 @@
 {{define "content"}}
+    <select id="metric">
+        <option value="">Create new metric</option>
+        {{range .Metrics}}
+        <option value="{{.ID}}">{{.Title}}</option>
+        {{end}}
+    </select>
+
     <p>Create a new metric:</p>
     
     <form>
