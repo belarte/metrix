@@ -1,13 +1,12 @@
 {{define "content"}}
-    <select id="metric">
-        <option value="">Create new metric</option>
-        {{range .Metrics}}
-        <option value="{{.ID}}">{{.Title}}</option>
-        {{end}}
-    </select>
+<select id="metric">
+    <option value="">Create new metric</option>
+    {{range .Metrics}}
+    <option value="{{.ID}}">{{.Title}}</option>
+    {{end}}
+</select>
 
-    <p>Create a new metric:</p>
-    
+<article>
     <form>
     <label for="title">Title</label>
     <input type="text" id="title" name="title" placeholder="Title" required>
@@ -17,4 +16,5 @@
     <input type="description" id="description" name="description" placeholder="Description" required>
     <button type="submit">Create</button>
     </form>
+</article>
 {{end}}
