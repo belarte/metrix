@@ -1,20 +1,22 @@
 {{define "content"}}
+<div id="manage-content">
 <select id="metric">
     <option value="">Create new metric</option>
     {{range .Metrics}}
-    <option value="{{.ID}}">{{.Title}}</option>
+    <option value="{{.ID}}" {{if eq .ID $.Selected.ID}}selected{{end}}>{{.Title}}</option>
     {{end}}
 </select>
 
 <article>
-    <form>
+    <form hx-post="/manage/click" hx-target="#manage-content">
     <label for="title">Title</label>
-    <input type="text" id="title" name="title" placeholder="Title" required>
+    <input type="text" id="title" name="title" placeholder="Title" value="{{.Selected.Title}}" required>
     <label for="unit">Unit</label>
-    <input type="text" id="unit" name="unit" placeholder="Unit" required>
-    <label for="password">Description</label>
-    <input type="description" id="description" name="description" placeholder="Description" required>
+    <input type="text" id="unit" name="unit" placeholder="Unit" value="{{.Selected.Unit}}"  required>
+    <label for="description">Description</label>
+    <input type="text" id="description" name="description" placeholder="Description" value="{{.Selected.Description}}" required>
     <button type="submit">Create</button>
     </form>
 </article>
+</div>
 {{end}}

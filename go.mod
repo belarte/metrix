@@ -2,7 +2,10 @@ module github.com/belarte/metrix
 
 go 1.21.4
 
-require github.com/spf13/cobra v1.8.0
+require (
+	github.com/gorilla/schema v1.2.1
+	github.com/spf13/cobra v1.8.0
+)
 
 require (
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
