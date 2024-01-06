@@ -20,11 +20,12 @@ type manageParams struct {
     Metrics []database.Metric
 }
 
-func manageHandler(db database.InMemory) func(http.ResponseWriter, *http.Request) {
+func manageHandler(db *database.InMemory) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		t, err := template.ParseFiles("server/templates/main.tmpl", "server/templates/manage.tmpl")
 		if err != nil {
-			log.Fatal(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+            return
 		}
 
         metrics, _ := db.GetMetrics()
@@ -33,7 +34,7 @@ func manageHandler(db database.InMemory) func(http.ResponseWriter, *http.Request
 	}
 }
 
-func Run(addr string, db database.InMemory) error {
+func Run(addr string, db *database.InMemory) error {
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/manage", manageHandler(db))
 	return http.ListenAndServe(addr, nil)

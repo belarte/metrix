@@ -7,27 +7,53 @@ type Metric struct {
 	Description string `json:"description"`
 }
 
-type InMemory struct{}
+type Metrics []Metric
+
+type InMemory struct{
+    data Metrics
+}
+
+func nextIdBuilder() func() int {
+    id := 0
+    return func() int {
+        id = id + 1
+        return id
+    }
+}
+
+var nextId = nextIdBuilder()
+
+func NewInMemory() *InMemory {
+    return &InMemory{
+        data: Metrics{
+            {
+                ID:          nextId(),
+                Title:       "Metric 1",
+                Unit:        "unit",
+                Description: "description",
+            },
+            {
+                ID:          nextId(),
+                Title:       "Metric 2",
+                Unit:        "unit",
+                Description: "description",
+            },
+            {
+                ID:          nextId(),
+                Title:       "Metric 3",
+                Unit:        "unit",
+                Description: "description",
+            },
+        },
+    }
+}
 
 func (db *InMemory) GetMetrics() ([]Metric, error) {
-	return []Metric{
-		{
-			ID:          1,
-			Title:       "Metric 1",
-			Unit:        "unit",
-			Description: "description",
-		},
-		{
-			ID:          2,
-			Title:       "Metric 2",
-			Unit:        "unit",
-			Description: "description",
-		},
-		{
-			ID:          3,
-			Title:       "Metric 3",
-			Unit:        "unit",
-			Description: "description",
-		},
-	}, nil
+	return db.data, nil
+}
+
+func (db *InMemory) AddMetric(m Metric) error {
+    m.ID = nextId()
+    db.data = append(db.data, m)
+    return nil
 }
