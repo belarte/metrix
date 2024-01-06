@@ -52,8 +52,8 @@ func (db *InMemory) GetMetrics() ([]Metric, error) {
 	return db.data, nil
 }
 
-func (db *InMemory) AddMetric(m Metric) error {
+func (db *InMemory) AddMetric(m Metric) (Metric, error) {
     m.ID = nextId()
     db.data = append(db.data, m)
-    return nil
+    return m, nil
 }
