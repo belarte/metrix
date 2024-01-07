@@ -6,10 +6,10 @@ import (
 )
 
 type Metric struct {
-	ID          int    `json:"id"`
-	Title       string `json:"title"`
-	Unit        string `json:"unit"`
-	Description string `json:"description"`
+	ID          int    `form:"id"`
+	Title       string `form:"title"`
+	Unit        string `form:"unit"`
+	Description string `form:"description"`
 }
 
 type Metrics []Metric

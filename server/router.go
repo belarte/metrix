@@ -7,7 +7,8 @@ import (
 	"strconv"
 
 	"github.com/belarte/metrix/database"
-	"github.com/gorilla/schema"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 type templateParams struct {
@@ -16,28 +17,27 @@ type templateParams struct {
 	Content  string
 }
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
+func homeHandler(c echo.Context) error {
 	t, err := template.ParseFiles("server/templates/main.tmpl", "server/templates/home.tmpl")
 	if err != nil {
 		log.Fatal(err)
 	}
-	t.Execute(w, templateParams{Content: "content"})
+	return t.Execute(c.Response().Writer, templateParams{Content: "content"})
 }
 
-func manageHandler(db *database.InMemory) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
+func manageHandler(db *database.InMemory) func(echo.Context) error {
+	return func(c echo.Context) error {
 		t, err := template.ParseFiles("server/templates/main.tmpl", "server/templates/manage.tmpl")
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+			return c.String(http.StatusInternalServerError, err.Error())
 		}
 
 		metrics, err := db.GetMetrics()
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return c.String(http.StatusInternalServerError, err.Error())
 		}
 
-		t.Execute(w, templateParams{
+		return t.Execute(c.Response().Writer, templateParams{
 			Metrics:  metrics,
 			Selected: database.Metric{ID: -1},
 			Content:  "content",
@@ -45,37 +45,29 @@ func manageHandler(db *database.InMemory) func(http.ResponseWriter, *http.Reques
 	}
 }
 
-func clickHandler(db *database.InMemory) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if err := r.ParseForm(); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
+func clickHandler(db *database.InMemory) func(echo.Context) error {
+	return func(c echo.Context) error {
 		var metric database.Metric
-		decoder := schema.NewDecoder()
-		if err := decoder.Decode(&metric, r.PostForm); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+		if err := c.Bind(&metric); err != nil {
+			return c.String(http.StatusBadRequest, err.Error())
 		}
 
 		metric, err := db.AddMetric(metric)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+			return c.String(http.StatusInternalServerError, err.Error())
 		}
 
 		t, err := template.ParseFiles("server/templates/manage.tmpl")
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+			return c.String(http.StatusInternalServerError, err.Error())
 		}
 
 		metrics, err := db.GetMetrics()
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return c.String(http.StatusInternalServerError, err.Error())
 		}
 
-		t.ExecuteTemplate(w, "content", templateParams{
+		return t.ExecuteTemplate(c.Response().Writer, "content", templateParams{
 			metrics,
 			metric,
 			"content",
@@ -83,41 +75,32 @@ func clickHandler(db *database.InMemory) func(http.ResponseWriter, *http.Request
 	}
 }
 
-func selectHandler(db *database.InMemory) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if err := r.ParseForm(); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
+func selectHandler(db *database.InMemory) func(echo.Context) error {
+	return func(c echo.Context) error {
+		val := c.FormValue("manage-select")
 
-		id, err := strconv.Atoi(r.Form.Get("manage-select"))
+		id, err := strconv.Atoi(c.FormValue("manage-select"))
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
+			return c.String(http.StatusBadRequest, err.Error())
 		}
-
-		log.Printf("id: %d", id)
-		log.Println(db.GetMetric(id))
+		log.Printf("val: %s - id: %d", val, id)
 
 		metric, err := db.GetMetric(id)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+			return c.String(http.StatusInternalServerError, err.Error())
 		}
 
 		metrics, err := db.GetMetrics()
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+			return c.String(http.StatusInternalServerError, err.Error())
 		}
 
 		t, err := template.ParseFiles("server/templates/manage.tmpl")
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+			return c.String(http.StatusInternalServerError, err.Error())
 		}
 
-		t.ExecuteTemplate(w, "content", templateParams{
+		return t.ExecuteTemplate(c.Response().Writer, "content", templateParams{
 			metrics,
 			metric,
 			"content",
@@ -126,9 +109,12 @@ func selectHandler(db *database.InMemory) func(w http.ResponseWriter, r *http.Re
 }
 
 func Run(addr string, db *database.InMemory) error {
-	http.HandleFunc("/", homeHandler)
-	http.HandleFunc("/manage", manageHandler(db))
-	http.HandleFunc("/manage/click", clickHandler(db))
-	http.HandleFunc("/manage/select", selectHandler(db))
-	return http.ListenAndServe(addr, nil)
+	e := echo.New()
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	e.GET("/", homeHandler)
+	e.GET("/manage", manageHandler(db))
+	e.POST("/manage/click", clickHandler(db))
+	e.GET("/manage/select", selectHandler(db))
+	return e.Start(addr)
 }
