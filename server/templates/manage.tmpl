@@ -1,6 +1,6 @@
 {{define "content"}}
 <div id="manage-content">
-<select id="metric">
+<select id="metric" name="manage-select" hx-get="/manage/select" hx-target="#manage-content">
     <option value="">Create new metric</option>
     {{range .Metrics}}
     <option value="{{.ID}}" {{if eq .ID $.Selected.ID}}selected{{end}}>{{.Title}}</option>

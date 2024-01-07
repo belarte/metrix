@@ -1,5 +1,10 @@
 package database
 
+import (
+	"errors"
+	"fmt"
+)
+
 type Metric struct {
 	ID          int    `json:"id"`
 	Title       string `json:"title"`
@@ -50,6 +55,17 @@ func NewInMemory() *InMemory {
 
 func (db *InMemory) GetMetrics() ([]Metric, error) {
 	return db.data, nil
+}
+
+func (db *InMemory) GetMetric(id int) (Metric, error) {
+    for _, m := range db.data {
+        if m.ID == id {
+            return m, nil
+        }
+    }
+
+    errorMsg := fmt.Sprintf("Metric %d not found", id)
+    return Metric{}, errors.New(errorMsg)
 }
 
 func (db *InMemory) AddMetric(m Metric) (Metric, error) {

@@ -27,7 +27,11 @@
                 </section>
 
                 <section>
+                    {{if eq .Content "content"}}
                     {{template "content" .}}
+                    {{else}}
+                    <p>Ooops</p>
+                    {{end}}
                 </section>
             </main>
 
