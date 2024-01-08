@@ -39,7 +39,7 @@ func manageHandler(db *database.InMemory) func(echo.Context) error {
 
 		return t.Execute(c.Response().Writer, templateParams{
 			Metrics:  metrics,
-			Selected: database.Metric{ID: -1},
+			Selected: database.Metric{},
 			Content:  "content",
 		})
 	}
@@ -68,9 +68,8 @@ func clickHandler(db *database.InMemory) func(echo.Context) error {
 		}
 
 		return t.ExecuteTemplate(c.Response().Writer, "content", templateParams{
-			metrics,
-			metric,
-			"content",
+			Metrics:  metrics,
+			Selected: metric,
 		})
 	}
 }
@@ -101,9 +100,8 @@ func selectHandler(db *database.InMemory) func(echo.Context) error {
 		}
 
 		return t.ExecuteTemplate(c.Response().Writer, "content", templateParams{
-			metrics,
-			metric,
-			"content",
+			Metrics:  metrics,
+			Selected: metric,
 		})
 	}
 }
