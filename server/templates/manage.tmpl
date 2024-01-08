@@ -8,7 +8,7 @@
 </select>
 
 <article>
-    <form hx-post="/manage/click" hx-target="#manage-content">
+    <form hx-post="/manage/submit" hx-target="#manage-content">
     <label for="title">Title</label>
     <input type="text" id="title" name="title" placeholder="Title" value="{{.Selected.Title}}" required>
     <label for="unit">Unit</label>
