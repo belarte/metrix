@@ -1,7 +1,6 @@
 package server
 
 import (
-	"html/template"
 	"log"
 	"net/http"
 	"strconv"
@@ -18,29 +17,22 @@ type templateParams struct {
 }
 
 func homeHandler(c echo.Context) error {
-	t, err := template.ParseFiles("server/templates/main.tmpl", "server/templates/home.tmpl")
-	if err != nil {
-		log.Fatal(err)
-	}
-	return t.Execute(c.Response().Writer, templateParams{Content: "content"})
+	return c.Render(http.StatusOK, "page", templateParams{
+		Content: "home",
+	})
 }
 
 func manageHandler(db *database.InMemory) func(echo.Context) error {
 	return func(c echo.Context) error {
-		t, err := template.ParseFiles("server/templates/main.tmpl", "server/templates/manage.tmpl")
-		if err != nil {
-			return c.String(http.StatusInternalServerError, err.Error())
-		}
-
 		metrics, err := db.GetMetrics()
 		if err != nil {
 			return c.String(http.StatusInternalServerError, err.Error())
 		}
 
-		return t.Execute(c.Response().Writer, templateParams{
+		return c.Render(http.StatusOK, "page", templateParams{
 			Metrics:  metrics,
 			Selected: database.Metric{},
-			Content:  "content",
+			Content:  "manage",
 		})
 	}
 }
@@ -57,17 +49,12 @@ func clickHandler(db *database.InMemory) func(echo.Context) error {
 			return c.String(http.StatusInternalServerError, err.Error())
 		}
 
-		t, err := template.ParseFiles("server/templates/manage.tmpl")
-		if err != nil {
-			return c.String(http.StatusInternalServerError, err.Error())
-		}
-
 		metrics, err := db.GetMetrics()
 		if err != nil {
 			return c.String(http.StatusInternalServerError, err.Error())
 		}
 
-		return t.ExecuteTemplate(c.Response().Writer, "content", templateParams{
+		return c.Render(http.StatusOK, "manage", templateParams{
 			Metrics:  metrics,
 			Selected: metric,
 		})
@@ -94,12 +81,7 @@ func selectHandler(db *database.InMemory) func(echo.Context) error {
 			return c.String(http.StatusInternalServerError, err.Error())
 		}
 
-		t, err := template.ParseFiles("server/templates/manage.tmpl")
-		if err != nil {
-			return c.String(http.StatusInternalServerError, err.Error())
-		}
-
-		return t.ExecuteTemplate(c.Response().Writer, "content", templateParams{
+		return c.Render(http.StatusOK, "manage", templateParams{
 			Metrics:  metrics,
 			Selected: metric,
 		})
@@ -108,6 +90,7 @@ func selectHandler(db *database.InMemory) func(echo.Context) error {
 
 func Run(addr string, db *database.InMemory) error {
 	e := echo.New()
+	e.Renderer = NewTemplateRenderer()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.GET("/", homeHandler)
