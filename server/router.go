@@ -9,9 +9,10 @@ import (
 )
 
 type templateParams struct {
-	Metrics  []database.Metric
-	Selected database.Metric
-	Content  string
+	Metrics     []database.Metric
+	Selected    database.Metric
+	Content     string
+	ButtonLabel string
 }
 
 func homeHandler(c echo.Context) error {
