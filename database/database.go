@@ -18,17 +18,18 @@ type InMemory struct{
     data Metrics
 }
 
-func nextIdBuilder() func() int {
-    id := 0
+func nextIdBuilder(id int) func() int {
     return func() int {
         id = id + 1
         return id
     }
 }
 
-var nextId = nextIdBuilder()
+var nextId = nextIdBuilder(0)
 
 func NewInMemory() *InMemory {
+    nextId = nextIdBuilder(0)
+
     return &InMemory{
         data: Metrics{
             {
@@ -68,8 +69,14 @@ func (db *InMemory) GetMetric(id int) (Metric, error) {
     return Metric{}, errors.New(errorMsg)
 }
 
-func (db *InMemory) AddMetric(m Metric) (Metric, error) {
-    m.ID = nextId()
-    db.data = append(db.data, m)
-    return m, nil
+func (db *InMemory) UpsertMetric(metric Metric) (Metric, error) {
+    for i, m := range db.data {
+        if metric.ID == m.ID {
+            db.data[i] = metric
+            return metric, nil
+        }
+    }
+    metric.ID = nextId()
+    db.data = append(db.data, metric)
+    return metric, nil
 }

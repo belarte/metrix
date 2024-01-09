@@ -43,7 +43,7 @@ func (handler *ManageHandler) Submit(c echo.Context) error {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 
-	metric, err := handler.db.AddMetric(metric)
+	metric, err := handler.db.UpsertMetric(metric)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
