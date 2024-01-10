@@ -43,9 +43,14 @@ func (handler *ManageHandler) Submit(c echo.Context) error {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 
-	metric, err := handler.db.UpsertMetric(metric)
+	upsertedMetric, err := handler.db.UpsertMetric(metric)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
+	}
+
+	additionnalMessage := "Metric created!"
+	if metric.ID == upsertedMetric.ID {
+		additionnalMessage = "Metric updated!"
 	}
 
 	metrics, err := handler.db.GetMetrics()
@@ -54,9 +59,10 @@ func (handler *ManageHandler) Submit(c echo.Context) error {
 	}
 
 	return c.Render(http.StatusOK, "manage", templateParams{
-		Metrics:     metrics,
-		Selected:    metric,
-		ButtonLabel: submitButtonUpdate,
+		Metrics:           metrics,
+		Selected:          upsertedMetric,
+		ButtonLabel:       submitButtonUpdate,
+		AdditionalMessage: additionnalMessage,
 	})
 }
 
