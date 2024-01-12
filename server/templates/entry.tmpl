@@ -1,3 +1,25 @@
 {{define "entry"}}
-Coming soon!
+<select id="metric" name="entry-select" hx-get="/entry/select" hx-target="#entry-content">
+    <option value="add-entry">Select a metric</option>
+    {{range .Metrics}}
+    <option value="{{.ID}}" {{if eq .ID $.Selected.ID}}selected{{end}}>{{.Title}}</option>
+    {{end}}
+</select>
+
+<div id="entry-content">
+</div>
+{{end}}
+
+{{define "entry-content"}}
+<article>
+    <form hx-post="/entry/submit" hx-target="">
+    <label for="value">Value in {{.Selected.Unit}}
+        <input type="number" step="any" id="value" name="value" required>
+    </label>
+    <label for="date">Date
+      <input type="date" id="date" name="date" required>
+    </label>
+    <button type="submit">Submit</button>
+    </form>
+</article>
 {{end}}
