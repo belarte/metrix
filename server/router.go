@@ -22,6 +22,12 @@ func homeHandler(c echo.Context) error {
 	})
 }
 
+func reportsHandler(c echo.Context) error {
+    return c.Render(http.StatusOK, "page", templateParams{
+        Content: "reports",
+    })
+}
+
 func Run(addr string, db *database.InMemory) error {
 	manageHandler := NewManageHandler(db)
 	entryHandler := NewEntryHandler(db)
@@ -38,6 +44,7 @@ func Run(addr string, db *database.InMemory) error {
 	e.GET("/entry", entryHandler.Entry)
 	e.GET("/entry/select", entryHandler.Select)
 	e.POST("/entry/submit", entryHandler.Submit)
+    e.GET("/reports", reportsHandler)
 
 	return e.Start(addr)
 }
