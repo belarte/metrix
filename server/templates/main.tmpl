@@ -23,6 +23,7 @@
                         <ul>
                             <li><a href="/" role="button">Home</a></li>
                             <li><a href="/manage" role="button">Manage</a></li>
+                            <li><a href="/entry" role="button">Entry</a></li>
                         </ul>
                     </nav>
                 </section>
@@ -32,6 +33,8 @@
                     {{template "home" .}}
                     {{else if eq .Content "manage"}}
                     {{template "manage" .}}
+                    {{else if eq .Content "entry"}}
+                    {{template "entry" .}}
                     {{else}}
                     <p>Ooops</p>
                     {{end}}
