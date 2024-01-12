@@ -6,33 +6,28 @@
     {{end}}
 </select>
 
-<div id="entry-content">
-</div>
+<article id="entry-content">
+Please select a metric.
+</article>
 {{end}}
 
 {{define "entry-form"}}
-<article>
-    <form hx-post="/entry/submit" hx-target="#entry-content">
-    <input type="hidden" name="metric" value="{{.Selected.ID}}">
-    <label for="value">Value in {{.Selected.Unit}}
-        <input type="number" step="any" id="value" name="value" required>
-    </label>
-    <label for="date">Date
-      <input type="date" id="date" name="date" required>
-    </label>
-    <button type="submit">Submit</button>
-    </form>
-</article>
+<form hx-post="/entry/submit" hx-target="#entry-content">
+<input type="hidden" name="metric" value="{{.Selected.ID}}">
+<label for="value">Value in {{.Selected.Unit}}
+    <input type="number" step="any" id="value" name="value" required>
+</label>
+<label for="date">Date
+  <input type="date" id="date" name="date" required>
+</label>
+<button type="submit">Submit</button>
+</form>
 {{end}}
 
 {{define "entry-created"}}
-<article>
 Entry submitted successfully!
-</article>
 {{end}}
 
 {{define "entry-updated"}}
-<article>
 Entry updated successfully!
-</article>
 {{end}}
