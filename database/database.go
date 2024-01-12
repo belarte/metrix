@@ -14,69 +14,109 @@ type Metric struct {
 
 type Metrics []Metric
 
-type InMemory struct{
-    data Metrics
+type Entry struct {
+	ID       int
+	MetricID int
+	Value    float64
+	Date     string
+}
+
+type Entries []Entry
+
+type InMemory struct {
+	metric  Metrics
+	entries Entries
 }
 
 func nextIdBuilder(id int) func() int {
-    return func() int {
-        id = id + 1
-        return id
-    }
+	return func() int {
+		id = id + 1
+		return id
+	}
 }
 
-var nextId = nextIdBuilder(0)
+var nextMetricId = nextIdBuilder(0)
+var nextEntryId = nextIdBuilder(0)
 
 func NewInMemory() *InMemory {
-    nextId = nextIdBuilder(0)
+	nextMetricId = nextIdBuilder(0)
+	nextEntryId = nextIdBuilder(0)
 
-    return &InMemory{
-        data: Metrics{
-            {
-                ID:          nextId(),
-                Title:       "Metric 1",
-                Unit:        "unit",
-                Description: "description",
-            },
-            {
-                ID:          nextId(),
-                Title:       "Metric 2",
-                Unit:        "unit",
-                Description: "description",
-            },
-            {
-                ID:          nextId(),
-                Title:       "Metric 3",
-                Unit:        "unit",
-                Description: "description",
-            },
-        },
-    }
+	return &InMemory{
+		metric: Metrics{
+			{ID: nextMetricId(), Title: "Metric 1", Unit: "unit", Description: "description"},
+			{ID: nextMetricId(), Title: "Metric 2", Unit: "unit", Description: "description"},
+			{ID: nextMetricId(), Title: "Metric 3", Unit: "unit", Description: "description"},
+		},
+		entries: Entries{
+			{ID: nextEntryId(), MetricID: 1, Value: 5.0, Date: "2018-01-01"},
+			{ID: nextEntryId(), MetricID: 2, Value: 2.1, Date: "2018-01-11"},
+			{ID: nextEntryId(), MetricID: 1, Value: 1.0, Date: "2018-01-15"},
+		},
+	}
 }
 
 func (db *InMemory) GetMetrics() ([]Metric, error) {
-	return db.data, nil
+	return db.metric, nil
 }
 
 func (db *InMemory) GetMetric(id int) (Metric, error) {
-    for _, m := range db.data {
-        if m.ID == id {
-            return m, nil
-        }
-    }
+	for _, m := range db.metric {
+		if m.ID == id {
+			return m, nil
+		}
+	}
 
-    errorMsg := fmt.Sprintf("Metric %d not found", id)
-    return Metric{}, errors.New(errorMsg)
+	errorMsg := fmt.Sprintf("Metric %d not found", id)
+	return Metric{}, errors.New(errorMsg)
 }
 
 func (db *InMemory) UpsertMetric(metric Metric) (Metric, error) {
-    for i, m := range db.data {
-        if metric.ID == m.ID {
-            db.data[i] = metric
-            return metric, nil
-        }
-    }
-    metric.ID = nextId()
-    db.data = append(db.data, metric)
-    return metric, nil
+	for i, m := range db.metric {
+		if metric.ID == m.ID {
+			db.metric[i] = metric
+			return metric, nil
+		}
+	}
+	metric.ID = nextMetricId()
+	db.metric = append(db.metric, metric)
+	return metric, nil
+}
+
+type DatabaseError struct {
+	message string
+}
+
+func NewDatabaseError(message string) DatabaseError {
+	return DatabaseError{message}
+}
+
+func (e DatabaseError) Error() string {
+	return e.message
+}
+
+func (db *InMemory) GetEntries() ([]Entry, error) {
+	return db.entries, nil
+}
+
+func (db *InMemory) UpsertEntry(metricId int, value float64, date string) (Entry, error) {
+	found := false
+	for _, m := range db.metric {
+		found = found || (m.ID == metricId)
+	}
+	if !found {
+		return Entry{}, DatabaseError{"metric not found"}
+	}
+
+	for i, e := range db.entries {
+		if e.MetricID == metricId && e.Date == date {
+			entry := Entry{e.ID, metricId, value, date}
+			db.entries[i] = entry
+			return entry, nil
+		}
+	}
+
+	entry := Entry{nextEntryId(), metricId, value, date}
+	db.entries = append(db.entries, entry)
+	return entry, nil
 }
