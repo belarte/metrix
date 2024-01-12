@@ -15,10 +15,10 @@ type Metric struct {
 type Metrics []Metric
 
 type Entry struct {
-	ID       int
-	MetricID int
-	Value    float64
-	Date     string
+	ID       int     `form:"id"`
+	MetricID int     `form:"metric"`
+	Value    float64 `form:"value"`
+	Date     string  `form:"date"`
 }
 
 type Entries []Entry

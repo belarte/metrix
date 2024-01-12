@@ -37,6 +37,7 @@ func Run(addr string, db *database.InMemory) error {
 	e.GET("/manage/select", manageHandler.Select)
 	e.GET("/entry", entryHandler.Entry)
 	e.GET("/entry/select", entryHandler.Select)
+	e.POST("/entry/submit", entryHandler.Submit)
 
 	return e.Start(addr)
 }

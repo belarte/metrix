@@ -44,10 +44,24 @@ func (h *EntryHandler) Select(c echo.Context) error {
 			return c.String(http.StatusInternalServerError, err.Error())
 		}
 
-		return c.Render(http.StatusOK, "entry-content", templateParams{
+		return c.Render(http.StatusOK, "entry-form", templateParams{
 			Selected: metric,
 		})
 	}
 
 	return c.String(http.StatusOK, "Please select a metric.")
+}
+
+func (h *EntryHandler) Submit(c echo.Context) error {
+	var entry database.Entry
+	if err := c.Bind(&entry); err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+
+	_, err := h.db.UpsertEntry(entry.MetricID, entry.Value, entry.Date)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.Render(http.StatusOK, "entry-created", nil)
 }
