@@ -1,3 +1,12 @@
 {{define "reports"}}
-Coming soon!
+<select id="reports" name="reports-select" hx-get="/reports/select" hx-target="#reports-content">
+    <option value="reports-select">Select a metric</option>
+    {{range .Metrics}}
+    <option value="{{.ID}}" {{if eq .ID $.Selected.ID}}selected{{end}}>{{.Title}}</option>
+    {{end}}
+</select>
+
+<article id="reports-content">
+Please select a metric.
+</article>
 {{end}}

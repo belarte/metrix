@@ -120,3 +120,13 @@ func (db *InMemory) UpsertEntry(metricId int, value float64, date string) (Entry
 	db.entries = append(db.entries, entry)
 	return entry, nil
 }
+
+func (db *InMemory) GetEntriesForMetric(metricId int) ([]Entry, error) {
+    entries := []Entry{}
+    for _, e := range db.entries {
+        if e.MetricID == metricId {
+            entries = append(entries, e)
+        }
+    }
+    return entries, nil
+}
