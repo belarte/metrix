@@ -121,7 +121,7 @@ func (db *InMemory) UpsertEntry(metricId int, value float64, date string) (Entry
 	return entry, nil
 }
 
-func (db *InMemory) GetEntriesForMetric(metricId int) ([]Entry, error) {
+func (db *InMemory) GetSortedEntriesForMetric(metricId int) ([]Entry, error) {
     entries := []Entry{}
     for _, e := range db.entries {
         if e.MetricID == metricId {
