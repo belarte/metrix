@@ -71,7 +71,7 @@ func (handler *ManageHandler) Select(c echo.Context) error {
 	label := submitButtonCreate
 
 	if val := c.FormValue("manage-select"); val != "create" {
-		id, err := strconv.Atoi(c.FormValue("manage-select"))
+		id, err := strconv.Atoi(val)
 		if err != nil {
 			return c.String(http.StatusBadRequest, err.Error())
 		}
