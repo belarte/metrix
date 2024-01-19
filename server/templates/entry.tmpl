@@ -1,4 +1,6 @@
 {{define "entry"}}
+<h5>Add an entry</h5>
+
 <select id="metric" name="entry-select" hx-get="/entry/select" hx-target="#entry-content">
     <option value="add-entry">Select a metric</option>
     {{range .Metrics}}

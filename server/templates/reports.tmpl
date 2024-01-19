@@ -1,4 +1,6 @@
 {{define "reports"}}
+<h5>Consult reports</h5>
+
 <select id="reports" name="reports-select" hx-get="/reports/select" hx-target="#reports-content">
     <option value="reports-select">Select a metric</option>
     {{range .Metrics}}
