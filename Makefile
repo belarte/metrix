@@ -6,3 +6,6 @@ run:
 
 test:
 	go test ./...  -fullpath
+
+docker:
+	docker-compose up --build

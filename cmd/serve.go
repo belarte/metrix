@@ -11,7 +11,7 @@ var serverCmd = &cobra.Command{
 	Short: "Start the server",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		db := database.NewInMemory()
-		return server.Run("localhost:8080", db)
+		return server.Run(":8080", db)
 	},
 }
 

@@ -1,0 +1,7 @@
+services:
+  metrix:
+    build:
+      context: .
+      dockerfile: Dockerfile_test
+    ports:
+      - "8080:8080"
