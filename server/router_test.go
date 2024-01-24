@@ -1,8 +1,11 @@
 package server_test
 
 import (
+	"net/http"
 	"testing"
 
+	"github.com/belarte/metrix/database"
+	"github.com/belarte/metrix/server"
 	"github.com/playwright-community/playwright-go"
 	"github.com/stretchr/testify/suite"
 )
@@ -12,6 +15,7 @@ type RouterTestSuite struct {
 	pw      *playwright.Playwright
 	browser playwright.Browser
 	page    playwright.Page
+	server  *server.Server
 }
 
 func (s *RouterTestSuite) SetupSuite() {
@@ -36,19 +40,38 @@ func (s *RouterTestSuite) TearDownSuite() {
 	s.NoError(err)
 }
 
-func (s *RouterTestSuite) TestRouterLandsOnTheHomePage() {
-	_, err := s.page.Goto("localhost:8080")
-	s.NoError(err)
+func (s *RouterTestSuite) SetupTest() {
+	s.server = server.New(database.NewInMemory())
+	go func() {
+		err := s.server.Start("127.0.0.1:12345")
+		s.ErrorIs(err, http.ErrServerClosed)
+	}()
+}
 
-	err = s.page.Locator("text=Welcome").WaitFor()
+func (s *RouterTestSuite) TearDownTest() {
+	err := s.server.Stop()
+	s.NoError(err)
+}
+
+func (s *RouterTestSuite) LoadPage() {
+	_, err := s.page.Goto("127.0.0.1:12345")
+	s.NoError(err)
+}
+
+func (s *RouterTestSuite) TestRouterLandsOnTheHomePage() {
+	s.LoadPage()
+
+	err := s.page.Locator("text=Welcome").WaitFor()
 	s.NoError(err)
 }
 
 func (s *RouterTestSuite) TestRouterNavigatesBetweenPages() {
-	_ = GoToHomePage(s.page, s.T())
-	_ = GoToManagePage(s.page, s.T())
-	_ = GoToEntryPage(s.page, s.T())
+	s.LoadPage()
+
 	_ = GoToReportsPage(s.page, s.T())
+	_ = GoToEntryPage(s.page, s.T())
+	_ = GoToManagePage(s.page, s.T())
+	_ = GoToHomePage(s.page, s.T())
 }
 
 func TestRouterTestSuite(t *testing.T) {

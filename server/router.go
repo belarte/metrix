@@ -22,12 +22,17 @@ func homeHandler(c echo.Context) error {
 	})
 }
 
-func Run(addr string, db *database.InMemory) error {
+type Server struct {
+	db *database.InMemory
+	e  *echo.Echo
+}
+
+func New(db *database.InMemory) *Server {
 	manageHandler := NewManageHandler(db)
 	entryHandler := NewEntryHandler(db)
 	reportsHandler := NewReportsHandler(db)
-	e := echo.New()
 
+	e := echo.New()
 	e.Renderer = NewTemplateRenderer()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
@@ -42,5 +47,16 @@ func Run(addr string, db *database.InMemory) error {
 	e.GET("/reports", reportsHandler.Reports)
 	e.GET("/reports/select", reportsHandler.Select)
 
-	return e.Start(addr)
+	return &Server{
+		db: db,
+		e:  e,
+	}
+}
+
+func (s *Server) Start(addr string) error {
+	return s.e.Start(addr)
+}
+
+func (s *Server) Stop() error {
+	return s.e.Shutdown(nil)
 }
