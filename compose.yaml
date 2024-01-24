@@ -2,6 +2,6 @@ services:
   metrix:
     build:
       context: .
-      dockerfile: Dockerfile_test
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
