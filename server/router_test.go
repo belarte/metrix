@@ -10,6 +10,8 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
+var address = "127.0.0.1:12345"
+
 type RouterTestSuite struct {
 	suite.Suite
 	pw      *playwright.Playwright
@@ -43,7 +45,7 @@ func (s *RouterTestSuite) TearDownSuite() {
 func (s *RouterTestSuite) SetupTest() {
 	s.server = server.New(database.NewInMemory())
 	go func() {
-		err := s.server.Start("127.0.0.1:12345")
+		err := s.server.Start(address)
 		s.ErrorIs(err, http.ErrServerClosed)
 	}()
 }
@@ -54,7 +56,7 @@ func (s *RouterTestSuite) TearDownTest() {
 }
 
 func (s *RouterTestSuite) LoadPage() {
-	_, err := s.page.Goto("127.0.0.1:12345")
+	_, err := s.page.Goto(address)
 	s.NoError(err)
 }
 
