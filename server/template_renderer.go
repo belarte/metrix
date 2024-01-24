@@ -1,6 +1,7 @@
 package server
 
 import (
+	"embed"
 	"html/template"
 	"io"
 
@@ -11,9 +12,12 @@ type TemplateRenderer struct {
 	templates *template.Template
 }
 
+//go:embed templates/*.tmpl
+var templatesFS embed.FS
+
 func NewTemplateRenderer() *TemplateRenderer {
 	return &TemplateRenderer{
-		templates: template.Must(template.ParseGlob("server/templates/*.tmpl")),
+		templates: template.Must(template.ParseFS(templatesFS, "templates/*.tmpl")),
 	}
 }
 
