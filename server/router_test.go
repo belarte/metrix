@@ -76,6 +76,18 @@ func (s *RouterTestSuite) TestRouterNavigatesBetweenPages() {
 	_ = GoToHomePage(s.page, s.T())
 }
 
+func (s *RouterTestSuite) TestAddMetric() {
+	s.LoadPage()
+
+	GoToManagePage(s.page, s.T()).
+		Select("Create new metric").
+		FillForm("new metric", "new unit", "new description").
+		Click("Create")
+
+	GoToEntryPage(s.page, s.T()).
+		SelectMetric("new metric")
+}
+
 func TestRouterTestSuite(t *testing.T) {
 	suite.Run(t, new(RouterTestSuite))
 }
