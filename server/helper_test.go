@@ -23,6 +23,16 @@ func selectOption(page playwright.Page, t *testing.T, label string) {
 	assert.Len(t, values, 1)
 }
 
+func submit(page playwright.Page, t *testing.T, button, confirmation string) {
+	err := page.GetByRole("button", playwright.PageGetByRoleOptions{
+		Name: button,
+	}).Click()
+	assert.NoError(t, err)
+
+	err = page.GetByText(confirmation).WaitFor()
+	assert.NoError(t, err)
+}
+
 type HomePage struct {
 	page playwright.Page
 	t    *testing.T
@@ -61,12 +71,34 @@ func (p *ManagePage) FillForm(title, unit, description string) *ManagePage {
 	return p
 }
 
-func (p *ManagePage) Click(name string) *ManagePage {
-	err := p.page.GetByRole("button", playwright.PageGetByRoleOptions{
-		Name: name,
-	}).Click()
+func (p *ManagePage) VerifyForm(title, unit, description string) *ManagePage {
+	t, err := p.page.GetByLabel("Title").InputValue()
 	assert.NoError(p.t, err)
+	assert.Equal(p.t, title, t)
 
+	u, err := p.page.GetByLabel("Unit").InputValue()
+	assert.NoError(p.t, err)
+	assert.Equal(p.t, unit, u)
+
+	d, err := p.page.GetByLabel("Description").InputValue()
+	assert.NoError(p.t, err)
+	assert.Equal(p.t, description, d)
+
+	return p
+}
+
+func (p *ManagePage) Reload() *ManagePage {
+	p.page.Reload()
+	return p
+}
+
+func (p *ManagePage) Create() *ManagePage {
+	submit(p.page, p.t, "Create", "Metric created!")
+	return p
+}
+
+func (p *ManagePage) Update() *ManagePage {
+	submit(p.page, p.t, "Update", "Metric updated!")
 	return p
 }
 
@@ -80,7 +112,7 @@ func GoToEntryPage(page playwright.Page, t *testing.T) *EntryPage {
 	return &EntryPage{page: page, t: t}
 }
 
-func (p *EntryPage) SelectMetric(title string) *EntryPage {
+func (p *EntryPage) Select(title string) *EntryPage {
 	selectOption(p.page, p.t, title)
 	return p
 }

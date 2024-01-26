@@ -81,11 +81,28 @@ func (s *RouterTestSuite) TestAddMetric() {
 
 	GoToManagePage(s.page, s.T()).
 		Select("Create new metric").
+		VerifyForm("", "", "").
 		FillForm("new metric", "new unit", "new description").
-		Click("Create")
+		Create().
+		Reload().
+		Select("new metric").
+		VerifyForm("new metric", "new unit", "new description")
 
 	GoToEntryPage(s.page, s.T()).
-		SelectMetric("new metric")
+		Select("new metric")
+}
+
+func (s *RouterTestSuite) TestUpdateMetric() {
+	s.LoadPage()
+
+	GoToManagePage(s.page, s.T()).
+		Select("Metric 2").
+		VerifyForm("Metric 2", "unit", "description").
+		FillForm("Metric 2", "new unit", "new description").
+		Update().
+		Reload().
+		Select("Metric 2").
+		VerifyForm("Metric 2", "new unit", "new description")
 }
 
 func TestRouterTestSuite(t *testing.T) {
