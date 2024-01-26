@@ -7,6 +7,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var pwa = playwright.NewPlaywrightAssertions()
+
 func goToPage(page playwright.Page, t *testing.T, button, expectedTitle string) {
 	err := page.GetByText(button).Click()
 	assert.NoError(t, err)
@@ -72,17 +74,14 @@ func (p *ManagePage) FillForm(title, unit, description string) *ManagePage {
 }
 
 func (p *ManagePage) VerifyForm(title, unit, description string) *ManagePage {
-	t, err := p.page.GetByLabel("Title").InputValue()
+	err := pwa.Locator(p.page.GetByLabel("Title")).ToHaveValue(title)
 	assert.NoError(p.t, err)
-	assert.Equal(p.t, title, t)
 
-	u, err := p.page.GetByLabel("Unit").InputValue()
+	err = pwa.Locator(p.page.GetByLabel("Unit")).ToHaveValue(unit)
 	assert.NoError(p.t, err)
-	assert.Equal(p.t, unit, u)
 
-	d, err := p.page.GetByLabel("Description").InputValue()
+	err = pwa.Locator(p.page.GetByLabel("Description")).ToHaveValue(description)
 	assert.NoError(p.t, err)
-	assert.Equal(p.t, description, d)
 
 	return p
 }
