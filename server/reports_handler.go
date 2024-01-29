@@ -4,8 +4,10 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/a-h/templ"
 	"github.com/belarte/metrix/database"
 	"github.com/belarte/metrix/diagram"
+	"github.com/belarte/metrix/views"
 	"github.com/labstack/echo/v4"
 )
 
@@ -17,6 +19,10 @@ func NewReportsHandler(db *database.InMemory) *ReportsHandler {
 	return &ReportsHandler{
 		db: db,
 	}
+}
+
+func render(c echo.Context, component templ.Component) error {
+    return component.Render(c.Request().Context(), c.Response())
 }
 
 func (h *ReportsHandler) Reports(c echo.Context) error {
@@ -53,5 +59,7 @@ func (h *ReportsHandler) Select(c echo.Context) error {
 	}
 
 	s := diagram.DataToGraph(metric, entries)
-	return c.String(http.StatusOK, s)
+    reports := views.Reports(s)
+
+	return render(c, reports)
 }

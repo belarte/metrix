@@ -1,10 +1,13 @@
 all:
 	go build -o bin/
 
-run:
+generate:
+	templ generate
+
+run: generate
 	go run main.go serve
 
-test:
+test: generate
 	go test ./...  -fullpath
 
 docker:

@@ -3,6 +3,7 @@ module github.com/belarte/metrix
 go 1.21.4
 
 require (
+	github.com/a-h/templ v0.2.543
 	github.com/go-echarts/go-echarts/v2 v2.3.3
 	github.com/labstack/echo/v4 v4.11.4
 	github.com/playwright-community/playwright-go v0.4001.0

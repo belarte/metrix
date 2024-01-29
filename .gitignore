@@ -22,3 +22,6 @@ go.work
 
 # build output
 bin/
+
+# templ generated files
+*_templ.go
