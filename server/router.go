@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/belarte/metrix/database"
@@ -58,5 +59,5 @@ func (s *Server) Start(addr string) error {
 }
 
 func (s *Server) Stop() error {
-	return s.e.Shutdown(nil)
+	return s.e.Shutdown(context.Background())
 }
