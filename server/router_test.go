@@ -58,6 +58,9 @@ func (s *RouterTestSuite) TearDownTest() {
 func (s *RouterTestSuite) LoadPage() {
 	_, err := s.page.Goto(address)
 	s.NoError(err)
+
+	err = s.page.Locator("text=Metrix 2024").WaitFor()
+	s.NoError(err)
 }
 
 func (s *RouterTestSuite) TestRouterLandsOnTheHomePage() {
@@ -103,6 +106,25 @@ func (s *RouterTestSuite) TestUpdateMetric() {
 		Reload().
 		Select("Metric 2").
 		VerifyForm("Metric 2", "new unit", "new description")
+}
+
+func (s *RouterTestSuite) TestAddingEntryIsVisibleInReport() {
+	s.LoadPage()
+
+	GoToReportsPage(s.page, s.T()).
+		Select("Metric 1").
+        OpenEntriesList().
+        VerifyEntriesCount(2)
+
+    GoToEntryPage(s.page, s.T()).
+		Select("Metric 1").
+        AddEntry("2021-01-01", "7,0")
+
+	GoToReportsPage(s.page, s.T()).
+		Select("Metric 1").
+        OpenEntriesList().
+        VerifyEntriesCount(3).
+        VerifyEntry("2021-01-01", "7.0")
 }
 
 func TestRouterTestSuite(t *testing.T) {

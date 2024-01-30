@@ -116,6 +116,17 @@ func (p *EntryPage) Select(title string) *EntryPage {
 	return p
 }
 
+func (p *EntryPage) AddEntry(date, value string) *EntryPage {
+	err := p.page.GetByText("Value in").PressSequentially(value)
+	assert.NoError(p.t, err)
+
+	err = p.page.GetByText("Date").Fill(date)
+	assert.NoError(p.t, err)
+
+	submit(p.page, p.t, "Submit", "Entry submitted successfully!")
+	return p
+}
+
 type ReportsPage struct {
 	page playwright.Page
 	t    *testing.T
@@ -124,4 +135,33 @@ type ReportsPage struct {
 func GoToReportsPage(page playwright.Page, t *testing.T) *ReportsPage {
 	goToPage(page, t, "Reports", "Consult reports")
 	return &ReportsPage{page: page, t: t}
+}
+
+func (p *ReportsPage) Select(title string) *ReportsPage {
+	selectOption(p.page, p.t, title)
+	return p
+}
+
+func (p *ReportsPage) OpenEntriesList() *ReportsPage {
+	err := p.page.GetByText("Entries").Click()
+	assert.NoError(p.t, err)
+	return p
+}
+
+func (p *ReportsPage) VerifyEntriesCount(expectedCount int) *ReportsPage {
+	count, err := p.page.Locator("table tbody tr").Count()
+	assert.NoError(p.t, err)
+	assert.Equal(p.t, expectedCount, count)
+
+	return p
+}
+
+func (p *ReportsPage) VerifyEntry(date, value string) *ReportsPage {
+    err := p.page.GetByText(date).WaitFor()
+    assert.NoError(p.t, err)
+
+    err = p.page.GetByText(value).WaitFor()
+    assert.NoError(p.t, err)
+
+	return p
 }

@@ -1,5 +1,43 @@
 package views
 
-templ Reports(diagram string) {
-	@templ.Raw(diagram)
+import (
+	"fmt"
+
+	"github.com/belarte/metrix/database"
+)
+
+func counter(n int) string {
+	return fmt.Sprintf("%d", n+1)
+}
+
+func value(f float64) string {
+	return fmt.Sprintf("%.2f", f)
+}
+
+templ Reports(entries database.Entries, diagram string) {
+	<details>
+		<summary>Entries</summary>
+		<table>
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Date</th>
+					<th>Value</th>
+				</tr>
+			</thead>
+			<tbody>
+				for i, entry := range entries {
+					<tr>
+						<td>{ counter(i) }</td>
+						<td>{ entry.Date }</td>
+						<td>{ value(entry.Value) }</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</details>
+	<details>
+		<summary>Diagram</summary>
+		@templ.Raw(diagram)
+	</details>
 }

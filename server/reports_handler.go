@@ -59,7 +59,7 @@ func (h *ReportsHandler) Select(c echo.Context) error {
 	}
 
 	s := diagram.DataToGraph(metric, entries)
-    reports := views.Reports(s)
+    reports := views.Reports(entries, s)
 
 	return render(c, reports)
 }
