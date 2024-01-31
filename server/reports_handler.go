@@ -31,10 +31,8 @@ func (h *ReportsHandler) Reports(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
-	return c.Render(http.StatusOK, "page", templateParams{
-		Content: "reports",
-		Metrics: metrics,
-	})
+    reports := views.ReportsPage(metrics)
+    return render(c, reports)
 }
 
 func (h *ReportsHandler) Select(c echo.Context) error {

@@ -1,4 +1,4 @@
-all:
+all: generate
 	go build -o bin/
 
 generate:

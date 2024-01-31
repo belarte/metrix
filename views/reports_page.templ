@@ -1,0 +1,67 @@
+package views
+
+import (
+	"fmt"
+
+	"github.com/belarte/metrix/database"
+)
+
+templ ReportsPage(metric database.Metrics) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="utf-8"/>
+			<title>Metrix</title>
+			<meta name="description" content="Metrix"/>
+			<meta name="author" content="Bruno Belarte"/>
+			<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"/>
+			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+			<script src="https://go-echarts.github.io/go-echarts-assets/assets/echarts.min.js"></script>
+		</head>
+		<body>
+			<main class="container">
+				<header>
+					<h1>Metrix</h1>
+				</header>
+				<main>
+					<section>
+						<nav>
+							<ul>
+								<li><a href="/" role="button">Home</a></li>
+								<li><a href="/manage" role="button">Manage</a></li>
+								<li><a href="/entry" role="button">Entry</a></li>
+								<li><a href="/reports" role="button">Reports</a></li>
+							</ul>
+						</nav>
+					</section>
+					<section>
+						<h5>Consult reports</h5>
+						<select id="reports" name="reports-select" hx-get="/reports/select" hx-target="#reports-content">
+							<option value="reports-select">Select a metric</option>
+							for _, m := range metric {
+								<option value={ fmt.Sprintf("%d", m.ID) }>{ m.Title }</option>
+							}
+						</select>
+						<article id="reports-content">
+							Please select a metric.
+						</article>
+						<style>
+                            .container {
+                                justify-content: center;
+                                align-items: center;
+                            }
+                            .item {margin: auto;}
+                        </style>
+					</section>
+				</main>
+				<footer>
+					<small>
+						<div>Metrix 2024</div>
+						<div>Learning project created to play with HTMX+Go</div>
+						<div>Created by <a href="http://github.com/belarte">Bruno Belarte</a></div>
+					</small>
+				</footer>
+			</main>
+		</body>
+	</html>
+}
