@@ -37,8 +37,6 @@
                     {{template "manage" .}}
                     {{else if eq .Content "entry"}}
                     {{template "entry" .}}
-                    {{else if eq .Content "reports"}}
-                    {{template "reports" .}}
                     {{else}}
                     <p>Ooops</p>
                     {{end}}
