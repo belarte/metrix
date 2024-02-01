@@ -14,6 +14,28 @@ func value(f float64) string {
 	return fmt.Sprintf("%.2f", f)
 }
 
+templ ReportsPage(metric database.Metrics) {
+	@layout() {
+		<h5>Consult reports</h5>
+		<select id="reports" name="reports-select" hx-get="/reports/select" hx-target="#reports-content">
+			<option value="reports-select">Select a metric</option>
+			for _, m := range metric {
+				<option value={ fmt.Sprintf("%d", m.ID) }>{ m.Title }</option>
+			}
+		</select>
+		<article id="reports-content">
+			Please select a metric.
+		</article>
+		<style>
+            .container {
+                justify-content: center;
+                align-items: center;
+            }
+            .item {margin: auto;}
+        </style>
+	}
+}
+
 templ Reports(entries database.Entries, diagram string) {
 	<details>
 		<summary>Entries</summary>
