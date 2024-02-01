@@ -2,9 +2,9 @@ package server
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/belarte/metrix/database"
+	"github.com/belarte/metrix/views"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -18,9 +18,8 @@ type templateParams struct {
 }
 
 func homeHandler(c echo.Context) error {
-	return c.Render(http.StatusOK, "page", templateParams{
-		Content: "home",
-	})
+	home := views.HomePage()
+	return render(c, home)
 }
 
 type Server struct {

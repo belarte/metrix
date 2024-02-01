@@ -31,9 +31,7 @@
                 </section>
 
                 <section>
-                    {{if eq .Content "home"}}
-                    {{template "home" .}}
-                    {{else if eq .Content "manage"}}
+                    {{if eq .Content "manage"}}
                     {{template "manage" .}}
                     {{else if eq .Content "entry"}}
                     {{template "entry" .}}
