@@ -1,10 +1,9 @@
-package server
+package handlers
 
 import (
 	"net/http"
 	"strconv"
 
-	"github.com/a-h/templ"
 	"github.com/belarte/metrix/database"
 	"github.com/belarte/metrix/diagram"
 	"github.com/belarte/metrix/views"
@@ -21,18 +20,14 @@ func NewReportsHandler(db *database.InMemory) *ReportsHandler {
 	}
 }
 
-func render(c echo.Context, component templ.Component) error {
-    return component.Render(c.Request().Context(), c.Response())
-}
-
 func (h *ReportsHandler) Reports(c echo.Context) error {
 	metrics, err := h.db.GetMetrics()
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
-    reports := views.ReportsPage(metrics)
-    return render(c, reports)
+	reports := views.ReportsPage(metrics)
+	return render(c, reports)
 }
 
 func (h *ReportsHandler) Select(c echo.Context) error {
@@ -57,7 +52,7 @@ func (h *ReportsHandler) Select(c echo.Context) error {
 	}
 
 	s := diagram.DataToGraph(metric, entries)
-    reports := views.Reports(entries, s)
+	reports := views.Reports(entries, s)
 
 	return render(c, reports)
 }

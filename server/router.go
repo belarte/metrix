@@ -4,23 +4,10 @@ import (
 	"context"
 
 	"github.com/belarte/metrix/database"
-	"github.com/belarte/metrix/views"
+	"github.com/belarte/metrix/handlers"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
-
-type templateParams struct {
-	Metrics           []database.Metric
-	Selected          database.Metric
-	Content           string
-	ButtonLabel       string
-	AdditionalMessage string
-}
-
-func homeHandler(c echo.Context) error {
-	home := views.HomePage()
-	return render(c, home)
-}
 
 type Server struct {
 	db *database.InMemory
@@ -28,16 +15,16 @@ type Server struct {
 }
 
 func New(db *database.InMemory) *Server {
-	manageHandler := NewManageHandler(db)
-	entryHandler := NewEntryHandler(db)
-	reportsHandler := NewReportsHandler(db)
+	manageHandler := handlers.NewManageHandler(db)
+	entryHandler := handlers.NewEntryHandler(db)
+	reportsHandler := handlers.NewReportsHandler(db)
 
 	e := echo.New()
 	e.Renderer = NewTemplateRenderer()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.GET("/", homeHandler)
+	e.GET("/", handlers.HomeHandler)
 	e.GET("/manage", manageHandler.Manage)
 	e.POST("/manage/submit", manageHandler.Submit)
 	e.GET("/manage/select", manageHandler.Select)
