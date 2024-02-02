@@ -1,18 +1,10 @@
 package views
 
 import (
-	"fmt"
+	"strconv"
 
 	"github.com/belarte/metrix/database"
 )
-
-func counter(n int) string {
-	return fmt.Sprintf("%d", n+1)
-}
-
-func value(f float64) string {
-	return fmt.Sprintf("%.2f", f)
-}
 
 templ ReportsPage(metric database.Metrics) {
 	@layout() {
@@ -20,7 +12,7 @@ templ ReportsPage(metric database.Metrics) {
 		<select id="reports" name="reports-select" hx-get="/reports/select" hx-target="#reports-content">
 			<option value="reports-select">Select a metric</option>
 			for _, m := range metric {
-				<option value={ fmt.Sprintf("%d", m.ID) }>{ m.Title }</option>
+				<option value={ strconv.Itoa(m.ID) }>{ m.Title }</option>
 			}
 		</select>
 		<article id="reports-content">
@@ -50,9 +42,9 @@ templ Reports(entries database.Entries, diagram string) {
 			<tbody>
 				for i, entry := range entries {
 					<tr>
-						<td>{ counter(i) }</td>
+						<td>{ strconv.Itoa(i+1) }</td>
 						<td>{ entry.Date }</td>
-						<td>{ value(entry.Value) }</td>
+						<td>{ strconv.FormatFloat(entry.Value, 'f', 2, 64) }</td>
 					</tr>
 				}
 			</tbody>
