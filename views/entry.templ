@@ -1,0 +1,41 @@
+package views
+
+import (
+	"strconv"
+
+	"github.com/belarte/metrix/database"
+)
+
+templ EntryPage(metrics database.Metrics) {
+	@layout() {
+		<h5>Add an entry</h5>
+		<select id="metric" name="entry-select" hx-get="/entry/select" hx-target="#entry-content">
+			<option value="add-entry">Select a metric</option>
+			for _, m := range metrics {
+				<option value={ strconv.Itoa(m.ID) }>{ m.Title }</option>
+			}
+		</select>
+		<article id="entry-content">
+			Please select a metric.
+		</article>
+	}
+}
+
+templ EntryForm(selected database.Metric) {
+	<form hx-post="/entry/submit" hx-target="#entry-content">
+		<input type="hidden" name="metric" value={ strconv.Itoa(selected.ID) }/>
+		<label for="value">
+			Value in { selected.Unit }
+			<input type="number" step="any" id="value" name="value" required/>
+		</label>
+		<label for="date">
+			Date
+			<input type="date" id="date" name="date" required/>
+		</label>
+		<button type="submit">Submit</button>
+	</form>
+}
+
+templ EntryCreated() {
+	<p>Entry submitted successfully!</p>
+}

@@ -33,8 +33,6 @@
                 <section>
                     {{if eq .Content "manage"}}
                     {{template "manage" .}}
-                    {{else if eq .Content "entry"}}
-                    {{template "entry" .}}
                     {{else}}
                     <p>Ooops</p>
                     {{end}}

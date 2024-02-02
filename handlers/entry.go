@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/belarte/metrix/database"
+	"github.com/belarte/metrix/views"
 	"github.com/labstack/echo/v4"
 )
 
@@ -24,10 +25,8 @@ func (h *EntryHandler) Entry(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
-	return c.Render(http.StatusOK, "page", templateParams{
-		Content: "entry",
-		Metrics: metrics,
-	})
+	page := views.EntryPage(metrics)
+	return render(c, page)
 }
 
 func (h *EntryHandler) Select(c echo.Context) error {
@@ -44,9 +43,8 @@ func (h *EntryHandler) Select(c echo.Context) error {
 			return c.String(http.StatusInternalServerError, err.Error())
 		}
 
-		return c.Render(http.StatusOK, "entry-form", templateParams{
-			Selected: metric,
-		})
+		form := views.EntryForm(metric)
+		return render(c, form)
 	}
 
 	return c.String(http.StatusOK, "Please select a metric.")
@@ -63,5 +61,6 @@ func (h *EntryHandler) Submit(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
-	return c.Render(http.StatusOK, "entry-created", nil)
+	res := views.EntryCreated()
+	return render(c, res)
 }
