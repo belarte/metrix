@@ -16,6 +16,7 @@ type RouterTestSuite struct {
 	suite.Suite
 	pw      *playwright.Playwright
 	browser playwright.Browser
+	context playwright.BrowserContext
 	page    playwright.Page
 	server  *server.Server
 }
@@ -29,13 +30,21 @@ func (s *RouterTestSuite) SetupSuite() {
 	s.NoError(err)
 	s.browser = browser
 
-	page, err := browser.NewPage()
+	context, err := browser.NewContext()
+	s.NoError(err)
+	context.SetDefaultTimeout(5000)
+	s.context = context
+
+	page, err := context.NewPage()
 	s.NoError(err)
 	s.page = page
 }
 
 func (s *RouterTestSuite) TearDownSuite() {
-	err := s.browser.Close()
+	err := s.context.Close()
+	s.NoError(err)
+
+	err = s.browser.Close()
 	s.NoError(err)
 
 	err = s.pw.Stop()
@@ -113,18 +122,18 @@ func (s *RouterTestSuite) TestAddingEntryIsVisibleInReport() {
 
 	GoToReportsPage(s.page, s.T()).
 		Select("Metric 1").
-        OpenEntriesList().
-        VerifyEntriesCount(2)
+		OpenEntriesList().
+		VerifyEntriesCount(2)
 
-    GoToEntryPage(s.page, s.T()).
+	GoToEntryPage(s.page, s.T()).
 		Select("Metric 1").
-        AddEntry("2021-01-01", "7,0")
+		AddEntry("2021-01-01", "7,0")
 
 	GoToReportsPage(s.page, s.T()).
 		Select("Metric 1").
-        OpenEntriesList().
-        VerifyEntriesCount(3).
-        VerifyEntry("2021-01-01", "7.0")
+		OpenEntriesList().
+		VerifyEntriesCount(3).
+		VerifyEntry("2021-01-01", "7.0")
 }
 
 func TestRouterTestSuite(t *testing.T) {
