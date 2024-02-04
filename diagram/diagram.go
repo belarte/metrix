@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/belarte/metrix/database"
+	"github.com/belarte/metrix/model"
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
 )
 
-func graphData(entries []database.Entry) ([]string, []opts.LineData) {
+func graphData(entries []model.Entry) ([]string, []opts.LineData) {
 	var x []string
 	var y []opts.LineData
 
@@ -21,7 +21,7 @@ func graphData(entries []database.Entry) ([]string, []opts.LineData) {
 	return x, y
 }
 
-func DataToGraph(metric database.Metric, entries []database.Entry) string {
+func DataToGraph(metric model.Metric, entries []model.Entry) string {
 	line := charts.NewLine()
 	line.SetGlobalOptions(charts.WithTitleOpts(opts.Title{
 		Title:    metric.Title,

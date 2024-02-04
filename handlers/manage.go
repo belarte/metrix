@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/belarte/metrix/database"
+	"github.com/belarte/metrix/model"
 	"github.com/labstack/echo/v4"
 )
 
@@ -31,14 +32,14 @@ func (handler *ManageHandler) Manage(c echo.Context) error {
 
 	return c.Render(http.StatusOK, "page", templateParams{
 		Metrics:     metrics,
-		Selected:    database.Metric{},
+		Selected:    model.Metric{},
 		Content:     "manage",
 		ButtonLabel: submitButtonCreate,
 	})
 }
 
 func (handler *ManageHandler) Submit(c echo.Context) error {
-	var metric database.Metric
+	var metric model.Metric
 	if err := c.Bind(&metric); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -67,7 +68,7 @@ func (handler *ManageHandler) Submit(c echo.Context) error {
 }
 
 func (handler *ManageHandler) Select(c echo.Context) error {
-	var metric database.Metric
+	var metric model.Metric
 	label := submitButtonCreate
 
 	if val := c.FormValue("manage-select"); val != "create" {

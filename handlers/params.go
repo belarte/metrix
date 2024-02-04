@@ -1,10 +1,10 @@
 package handlers
 
-import "github.com/belarte/metrix/database"
+import "github.com/belarte/metrix/model"
 
 type templateParams struct {
-	Metrics           []database.Metric
-	Selected          database.Metric
+	Metrics           []model.Metric
+	Selected          model.Metric
 	Content           string
 	ButtonLabel       string
 	AdditionalMessage string

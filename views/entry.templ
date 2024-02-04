@@ -3,7 +3,7 @@ package views
 import (
 	"strconv"
 
-	"github.com/belarte/metrix/database"
+	"github.com/belarte/metrix/model"
 	"github.com/belarte/metrix/views/components"
 )
 
@@ -16,7 +16,7 @@ var entryParams = components.SelectParams{
 	DefaultText:  "Select a metric",
 }
 
-templ EntryPage(metrics database.Metrics) {
+templ EntryPage(metrics model.Metrics) {
 	@layout() {
 		<h5>Add an entry</h5>
 		@components.Select(FromMetrics(metrics), entryParams)
@@ -26,7 +26,7 @@ templ EntryPage(metrics database.Metrics) {
 	}
 }
 
-templ EntryForm(selected database.Metric) {
+templ EntryForm(selected model.Metric) {
 	<form hx-post="/entry/submit" hx-target="#entry-content">
 		<input type="hidden" name="metric" value={ strconv.Itoa(selected.ID) }/>
 		<label for="value">

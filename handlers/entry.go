@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/belarte/metrix/database"
+	"github.com/belarte/metrix/model"
 	"github.com/belarte/metrix/views"
 	"github.com/labstack/echo/v4"
 )
@@ -30,7 +31,7 @@ func (h *EntryHandler) Entry(c echo.Context) error {
 }
 
 func (h *EntryHandler) Select(c echo.Context) error {
-	var metric database.Metric
+	var metric model.Metric
 
 	if val := c.FormValue("entry-select"); val != "add-entry" {
 		id, err := strconv.Atoi(val)
@@ -51,7 +52,7 @@ func (h *EntryHandler) Select(c echo.Context) error {
 }
 
 func (h *EntryHandler) Submit(c echo.Context) error {
-	var entry database.Entry
+	var entry model.Entry
 	if err := c.Bind(&entry); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}

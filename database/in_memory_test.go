@@ -4,11 +4,12 @@ import (
 	"testing"
 
 	"github.com/belarte/metrix/database"
+	"github.com/belarte/metrix/model"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	initial = database.Metrics{
+	initial = model.Metrics{
 		{
 			ID:          1,
 			Title:       "Metric 1",
@@ -28,7 +29,7 @@ var (
 			Description: "description",
 		},
 	}
-	afterInsertion = database.Metrics{
+	afterInsertion = model.Metrics{
 		{
 			ID:          1,
 			Title:       "Metric 1",
@@ -54,7 +55,7 @@ var (
 			Description: "description",
 		},
 	}
-	afterUpdate = database.Metrics{
+	afterUpdate = model.Metrics{
 		{
 			ID:          1,
 			Title:       "Metric 1",
@@ -74,13 +75,13 @@ var (
 			Description: "description",
 		},
 	}
-	metricToCreate = database.Metric{
+	metricToCreate = model.Metric{
 		ID:          4,
 		Title:       "Metric 4",
 		Unit:        "Unit 4",
 		Description: "description",
 	}
-	metricToUpdate = database.Metric{
+	metricToUpdate = model.Metric{
 		ID:          2,
 		Title:       "New Title",
 		Unit:        "Unit 4",
@@ -90,9 +91,9 @@ var (
 
 func TestDatabaseAddMetric(t *testing.T) {
 	tests := map[string]struct {
-		metric   database.Metric
-		input    database.Metrics
-		expected database.Metrics
+		metric   model.Metric
+		input    model.Metrics
+		expected model.Metrics
 	}{
 		"create a new metric": {
 			metricToCreate,
@@ -125,29 +126,29 @@ func TestDatabaseAddEntry(t *testing.T) {
 		metricId int
 		value    float64
 		date     string
-        result   database.Entry
-        size     int
-        err      error
+		result   model.Entry
+		size     int
+		err      error
 	}{
-        "add a new entry": {
-            1, 1.0, "2018-02-01", database.Entry{4, 1, 1.0, "2018-02-01"}, 4, nil,
-        },
-        "metric does not exist": {
-            -1, 1.0, "2018-02-01", database.Entry{}, 3, database.NewDatabaseError("metric not found"),
-        },
-        "metric already entered for that date": {
-            1, 7.0, "2018-01-01", database.Entry{1, 1, 7.0, "2018-01-01"}, 3, nil,
-        },
-    }
+		"add a new entry": {
+			1, 1.0, "2018-02-01", model.NewEntry(4, 1, 1.0, "2018-02-01"), 4, nil,
+		},
+		"metric does not exist": {
+			-1, 1.0, "2018-02-01", model.Entry{}, 3, database.NewDatabaseError("metric not found"),
+		},
+		"metric already entered for that date": {
+			1, 7.0, "2018-01-01", model.NewEntry(1, 1, 7.0, "2018-01-01"), 3, nil,
+		},
+	}
 
-    for name, test := range tests {
-        t.Run(name, func(t *testing.T) {
-            db := database.NewInMemory()
-            entry, err := db.UpsertEntry(test.metricId, test.value, test.date)
-            entries, _ := db.GetEntries()
-            assert.Equal(t, test.err, err)
-            assert.Equal(t, test.result, entry)
-            assert.Equal(t, test.size, len(entries))
-        })
-    }
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			db := database.NewInMemory()
+			entry, err := db.UpsertEntry(test.metricId, test.value, test.date)
+			entries, _ := db.GetEntries()
+			assert.Equal(t, test.err, err)
+			assert.Equal(t, test.result, entry)
+			assert.Equal(t, test.size, len(entries))
+		})
+	}
 }

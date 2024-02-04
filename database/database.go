@@ -3,29 +3,13 @@ package database
 import (
 	"errors"
 	"fmt"
+
+	"github.com/belarte/metrix/model"
 )
 
-type Metric struct {
-	ID          int    `form:"id"`
-	Title       string `form:"title"`
-	Unit        string `form:"unit"`
-	Description string `form:"description"`
-}
-
-type Metrics []Metric
-
-type Entry struct {
-	ID       int     `form:"id"`
-	MetricID int     `form:"metric"`
-	Value    float64 `form:"value"`
-	Date     string  `form:"date"`
-}
-
-type Entries []Entry
-
 type InMemory struct {
-	metric  Metrics
-	entries Entries
+	metric  model.Metrics
+	entries model.Entries
 }
 
 func nextIdBuilder(id int) func() int {
@@ -43,12 +27,12 @@ func NewInMemory() *InMemory {
 	nextEntryId = nextIdBuilder(0)
 
 	return &InMemory{
-		metric: Metrics{
+		metric: model.Metrics{
 			{ID: nextMetricId(), Title: "Metric 1", Unit: "unit", Description: "description"},
 			{ID: nextMetricId(), Title: "Metric 2", Unit: "unit", Description: "description"},
 			{ID: nextMetricId(), Title: "Metric 3", Unit: "unit", Description: "description"},
 		},
-		entries: Entries{
+		entries: model.Entries{
 			{ID: nextEntryId(), MetricID: 1, Value: 5.0, Date: "2018-01-01"},
 			{ID: nextEntryId(), MetricID: 2, Value: 2.1, Date: "2018-01-11"},
 			{ID: nextEntryId(), MetricID: 1, Value: 1.0, Date: "2018-01-15"},
@@ -56,11 +40,11 @@ func NewInMemory() *InMemory {
 	}
 }
 
-func (db *InMemory) GetMetrics() ([]Metric, error) {
+func (db *InMemory) GetMetrics() ([]model.Metric, error) {
 	return db.metric, nil
 }
 
-func (db *InMemory) GetMetric(id int) (Metric, error) {
+func (db *InMemory) GetMetric(id int) (model.Metric, error) {
 	for _, m := range db.metric {
 		if m.ID == id {
 			return m, nil
@@ -68,10 +52,10 @@ func (db *InMemory) GetMetric(id int) (Metric, error) {
 	}
 
 	errorMsg := fmt.Sprintf("Metric %d not found", id)
-	return Metric{}, errors.New(errorMsg)
+	return model.Metric{}, errors.New(errorMsg)
 }
 
-func (db *InMemory) UpsertMetric(metric Metric) (Metric, error) {
+func (db *InMemory) UpsertMetric(metric model.Metric) (model.Metric, error) {
 	for i, m := range db.metric {
 		if metric.ID == m.ID {
 			db.metric[i] = metric
@@ -95,38 +79,48 @@ func (e DatabaseError) Error() string {
 	return e.message
 }
 
-func (db *InMemory) GetEntries() ([]Entry, error) {
+func (db *InMemory) GetEntries() ([]model.Entry, error) {
 	return db.entries, nil
 }
 
-func (db *InMemory) UpsertEntry(metricId int, value float64, date string) (Entry, error) {
+func (db *InMemory) UpsertEntry(metricId int, value float64, date string) (model.Entry, error) {
 	found := false
 	for _, m := range db.metric {
 		found = found || (m.ID == metricId)
 	}
 	if !found {
-		return Entry{}, DatabaseError{"metric not found"}
+		return model.Entry{}, DatabaseError{"metric not found"}
 	}
 
 	for i, e := range db.entries {
 		if e.MetricID == metricId && e.Date == date {
-			entry := Entry{e.ID, metricId, value, date}
+			entry := model.Entry{
+				ID:       e.ID,
+				MetricID: metricId,
+				Value:    value,
+				Date:     date,
+			}
 			db.entries[i] = entry
 			return entry, nil
 		}
 	}
 
-	entry := Entry{nextEntryId(), metricId, value, date}
+	entry := model.Entry{
+		ID:       nextEntryId(),
+		MetricID: metricId,
+		Value:    value,
+		Date:     date,
+	}
 	db.entries = append(db.entries, entry)
 	return entry, nil
 }
 
-func (db *InMemory) GetSortedEntriesForMetric(metricId int) ([]Entry, error) {
-    entries := []Entry{}
-    for _, e := range db.entries {
-        if e.MetricID == metricId {
-            entries = append(entries, e)
-        }
-    }
-    return entries, nil
+func (db *InMemory) GetSortedEntriesForMetric(metricId int) ([]model.Entry, error) {
+	entries := []model.Entry{}
+	for _, e := range db.entries {
+		if e.MetricID == metricId {
+			entries = append(entries, e)
+		}
+	}
+	return entries, nil
 }

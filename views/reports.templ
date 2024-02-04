@@ -3,7 +3,7 @@ package views
 import (
 	"strconv"
 
-	"github.com/belarte/metrix/database"
+	"github.com/belarte/metrix/model"
 	"github.com/belarte/metrix/views/components"
 )
 
@@ -16,7 +16,7 @@ var reportsParams = components.SelectParams{
 	DefaultText:  "Select a metric",
 }
 
-func FromMetrics(metrics database.Metrics) components.Options {
+func FromMetrics(metrics model.Metrics) components.Options {
 	var options components.Options
 
 	for _, m := range metrics {
@@ -30,7 +30,7 @@ func FromMetrics(metrics database.Metrics) components.Options {
 	return options
 }
 
-templ ReportsPage(metrics database.Metrics) {
+templ ReportsPage(metrics model.Metrics) {
 	@layout() {
 		<h5>Consult reports</h5>
 		@components.Select(FromMetrics(metrics), reportsParams)
@@ -47,7 +47,7 @@ templ ReportsPage(metrics database.Metrics) {
 	}
 }
 
-templ Reports(entries database.Entries, diagram string) {
+templ Reports(entries model.Entries, diagram string) {
 	<details>
 		<summary>Entries</summary>
 		<table>
