@@ -4,17 +4,36 @@ import (
 	"strconv"
 
 	"github.com/belarte/metrix/database"
+	"github.com/belarte/metrix/views/components"
 )
 
-templ ReportsPage(metric database.Metrics) {
+var reportsParams = components.SelectParams{
+	ID:           "reports",
+	Name:         "reports-select",
+	Endpoint:     "/reports/select",
+	Target:       "#reports-content",
+	DefaultValue: "reports-select",
+	DefaultText:  "Select a metric",
+}
+
+func FromMetrics(metrics database.Metrics) components.Options {
+	var options components.Options
+
+	for _, m := range metrics {
+		o := components.Option{
+			Value: strconv.Itoa(m.ID),
+			Label: m.Title,
+		}
+		options = append(options, o)
+	}
+
+	return options
+}
+
+templ ReportsPage(metrics database.Metrics) {
 	@layout() {
 		<h5>Consult reports</h5>
-		<select id="reports" name="reports-select" hx-get="/reports/select" hx-target="#reports-content">
-			<option value="reports-select">Select a metric</option>
-			for _, m := range metric {
-				<option value={ strconv.Itoa(m.ID) }>{ m.Title }</option>
-			}
-		</select>
+		@components.Select(FromMetrics(metrics), reportsParams)
 		<article id="reports-content">
 			Please select a metric.
 		</article>

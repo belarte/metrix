@@ -4,17 +4,22 @@ import (
 	"strconv"
 
 	"github.com/belarte/metrix/database"
+	"github.com/belarte/metrix/views/components"
 )
+
+var entryParams = components.SelectParams{
+	ID:           "metric",
+	Name:         "entry-select",
+	Endpoint:     "/entry/select",
+	Target:       "#entry-content",
+	DefaultValue: "add-entry",
+	DefaultText:  "Select a metric",
+}
 
 templ EntryPage(metrics database.Metrics) {
 	@layout() {
 		<h5>Add an entry</h5>
-		<select id="metric" name="entry-select" hx-get="/entry/select" hx-target="#entry-content">
-			<option value="add-entry">Select a metric</option>
-			for _, m := range metrics {
-				<option value={ strconv.Itoa(m.ID) }>{ m.Title }</option>
-			}
-		</select>
+		@components.Select(FromMetrics(metrics), entryParams)
 		<article id="entry-content">
 			Please select a metric.
 		</article>

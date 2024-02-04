@@ -1,0 +1,26 @@
+package components
+
+type SelectParams struct {
+	ID           string
+	Name         string
+	Endpoint     string
+	Target       string
+	DefaultValue string
+	DefaultText  string
+}
+
+type Option struct {
+	Value string
+	Label string
+}
+
+type Options []Option
+
+templ Select(options Options, params SelectParams) {
+	<select id={ params.ID } name={ params.Name } hx-get={ params.Endpoint } hx-target={ params.Target }>
+		<option value={ params.DefaultValue }>{ params.DefaultText }</option>
+		for _, o := range options {
+			<option value={ o.Value }>{ o.Label }</option>
+		}
+	</select>
+}
