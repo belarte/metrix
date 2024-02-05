@@ -20,7 +20,6 @@ func New(db *database.InMemory) *Server {
 	reportsHandler := handlers.NewReportsHandler(db)
 
 	e := echo.New()
-	e.Renderer = NewTemplateRenderer()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
