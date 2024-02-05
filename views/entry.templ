@@ -19,7 +19,7 @@ var entryParams = components.SelectParams{
 templ EntryPage(metrics model.Metrics) {
 	@layout() {
 		<h5>Add an entry</h5>
-		@components.Select(FromMetrics(metrics), entryParams)
+		@components.Select(FromMetrics(metrics, model.Metric{}), entryParams)
 		<article id="entry-content">
 			Please select a metric.
 		</article>

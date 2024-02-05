@@ -16,13 +16,14 @@ var reportsParams = components.SelectParams{
 	DefaultText:  "Select a metric",
 }
 
-func FromMetrics(metrics model.Metrics) components.Options {
+func FromMetrics(metrics model.Metrics, selected model.Metric) components.Options {
 	var options components.Options
 
 	for _, m := range metrics {
 		o := components.Option{
-			Value: strconv.Itoa(m.ID),
-			Label: m.Title,
+			Value:      strconv.Itoa(m.ID),
+			Label:      m.Title,
+			IsSelected: m.ID == selected.ID,
 		}
 		options = append(options, o)
 	}
@@ -33,7 +34,7 @@ func FromMetrics(metrics model.Metrics) components.Options {
 templ ReportsPage(metrics model.Metrics) {
 	@layout() {
 		<h5>Consult reports</h5>
-		@components.Select(FromMetrics(metrics), reportsParams)
+		@components.Select(FromMetrics(metrics, model.Metric{}), reportsParams)
 		<article id="reports-content">
 			Please select a metric.
 		</article>

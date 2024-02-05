@@ -10,8 +10,9 @@ type SelectParams struct {
 }
 
 type Option struct {
-	Value string
-	Label string
+	Value      string
+	Label      string
+	IsSelected bool
 }
 
 type Options []Option
@@ -20,7 +21,15 @@ templ Select(options Options, params SelectParams) {
 	<select id={ params.ID } name={ params.Name } hx-get={ params.Endpoint } hx-target={ params.Target }>
 		<option value={ params.DefaultValue }>{ params.DefaultText }</option>
 		for _, o := range options {
-			<option value={ o.Value }>{ o.Label }</option>
+			@option(o)
 		}
 	</select>
+}
+
+templ option(o Option) {
+	if o.IsSelected {
+		<option value={ o.Value } selected>{ o.Label }</option>
+	} else {
+		<option value={ o.Value }>{ o.Label }</option>
+	}
 }
