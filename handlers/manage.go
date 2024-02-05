@@ -6,6 +6,7 @@ import (
 
 	"github.com/belarte/metrix/database"
 	"github.com/belarte/metrix/model"
+	"github.com/belarte/metrix/views"
 	"github.com/labstack/echo/v4"
 )
 
@@ -30,12 +31,8 @@ func (handler *ManageHandler) Manage(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
-	return c.Render(http.StatusOK, "page", templateParams{
-		Metrics:     metrics,
-		Selected:    model.Metric{},
-		Content:     "manage",
-		ButtonLabel: submitButtonCreate,
-	})
+	page := views.ManagePage(metrics, model.Metric{}, submitButtonCreate, "")
+	return render(c, page)
 }
 
 func (handler *ManageHandler) Submit(c echo.Context) error {
@@ -59,12 +56,8 @@ func (handler *ManageHandler) Submit(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
-	return c.Render(http.StatusOK, "manage", templateParams{
-		Metrics:           metrics,
-		Selected:          upsertedMetric,
-		ButtonLabel:       submitButtonUpdate,
-		AdditionalMessage: additionnalMessage,
-	})
+	page := views.Manage(metrics, upsertedMetric, submitButtonCreate, additionnalMessage)
+	return render(c, page)
 }
 
 func (handler *ManageHandler) Select(c echo.Context) error {
@@ -90,9 +83,6 @@ func (handler *ManageHandler) Select(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
-	return c.Render(http.StatusOK, "manage", templateParams{
-		Metrics:     metrics,
-		Selected:    metric,
-		ButtonLabel: label,
-	})
+	page := views.Manage(metrics, metric, label, "")
+	return render(c, page)
 }
