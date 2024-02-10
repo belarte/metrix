@@ -25,3 +25,6 @@ bin/
 
 # templ generated files
 *_templ.go
+
+# database files
+*.sqlite
