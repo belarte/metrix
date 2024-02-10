@@ -27,7 +27,7 @@ func (s *RepositoryTestSuite) TearDownTest() {
 	s.NoError(err)
 }
 
-func (s *RepositoryTestSuite) TestDatabaseAddMetric() {
+func (s *RepositoryTestSuite) TestAddMetric() {
 	_, err := s.db.UpsertMetric(metricToCreate)
 	s.NoError(err)
 
@@ -36,7 +36,7 @@ func (s *RepositoryTestSuite) TestDatabaseAddMetric() {
 	s.ElementsMatch(metrics, afterInsertion)
 }
 
-func (s *RepositoryTestSuite) TestDatabaseUpdateMetric() {
+func (s *RepositoryTestSuite) TestUpdateMetric() {
 	_, err := s.db.UpsertMetric(metricToUpdate)
 	s.NoError(err)
 
