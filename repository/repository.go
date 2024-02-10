@@ -30,14 +30,14 @@ type Repository struct {
 func New() (*Repository, error) {
 	db, err := sql.Open("sqlite", file)
 	if err != nil {
-		return nil, fmt.Errorf("Error opening database: %w", err)
+		return nil, fmt.Errorf("error opening database: %w", err)
 	}
 	return &Repository{db: db}, nil
 }
 
 func (d *Repository) Migrate() error {
 	if _, err := d.db.Exec(schema); err != nil {
-		return fmt.Errorf("Error creating schema: %w", err)
+		return fmt.Errorf("error creating schema: %w", err)
 	}
 	return nil
 }
@@ -49,7 +49,7 @@ func (d *Repository) Close() error {
 func (d *Repository) GetMetrics() ([]model.Metric, error) {
 	rows, err := d.db.Query("SELECT id, title, unit, description FROM metrics")
 	if err != nil {
-		return nil, fmt.Errorf("Error querying metrics: %w", err)
+		return nil, fmt.Errorf("error querying metrics: %w", err)
 	}
 	defer rows.Close()
 
@@ -57,7 +57,7 @@ func (d *Repository) GetMetrics() ([]model.Metric, error) {
 	for rows.Next() {
 		var metric model.Metric
 		if err = rows.Scan(&metric.ID, &metric.Title, &metric.Unit, &metric.Description); err != nil {
-			return nil, fmt.Errorf("Error scanning metric: %w", err)
+			return nil, fmt.Errorf("error scanning metric: %w", err)
 		}
 		metrics = append(metrics, metric)
 	}
@@ -70,42 +70,23 @@ func (d *Repository) GetMetric(id int) (model.Metric, error) {
 		Scan(&metric.ID, &metric.Title, &metric.Unit, &metric.Description)
 
 	if err != nil {
-		return model.Metric{}, fmt.Errorf("Error querying metric: %w", err)
-	}
-	return metric, nil
-}
-
-func (d *Repository) insertMetric(metric model.Metric) (model.Metric, error) {
-	res, err := d.db.Exec(
-		"INSERT INTO metrics (title, unit, description) VALUES (?, ?, ?)",
-		metric.Title, metric.Unit, metric.Description,
-	)
-	if err != nil {
-		return model.Metric{}, fmt.Errorf("Error inserting metric: %w", err)
-	}
-	var id int64
-	if id, err = res.LastInsertId(); err != nil {
-		return model.Metric{}, fmt.Errorf("Error getting last insert ID: %w", err)
-	}
-	metric.ID = int(id)
-	return metric, nil
-}
-
-func (d *Repository) updateMetric(metric model.Metric) (model.Metric, error) {
-	_, err := d.db.Exec(
-		"UPDATE metrics SET title = ?, unit = ?, description = ? WHERE id = ?",
-		metric.Title, metric.Unit, metric.Description, metric.ID,
-	)
-	if err != nil {
-		return model.Metric{}, fmt.Errorf("Error updating metric: %w", err)
+		return model.Metric{}, fmt.Errorf("error querying metric: %w", err)
 	}
 	return metric, nil
 }
 
 func (d *Repository) UpsertMetric(metric model.Metric) (model.Metric, error) {
-	_, err := d.GetMetric(metric.ID)
+	res, err := d.db.Exec(
+		"INSERT OR REPLACE INTO metrics (id, title, unit, description) VALUES (?, ?, ?, ?)",
+		metric.ID, metric.Title, metric.Unit, metric.Description,
+	)
 	if err != nil {
-		return d.insertMetric(metric)
+		return model.Metric{}, fmt.Errorf("error inserting metric: %w", err)
 	}
-	return d.updateMetric(metric)
+	var id int64
+	if id, err = res.LastInsertId(); err != nil {
+		return model.Metric{}, fmt.Errorf("error getting last insert ID: %w", err)
+	}
+	metric.ID = int(id)
+	return metric, nil
 }
