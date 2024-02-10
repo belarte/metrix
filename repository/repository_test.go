@@ -8,13 +8,17 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
+const (
+	inMemoryDatabase = ":memory:"
+)
+
 type RepositoryTestSuite struct {
 	suite.Suite
 	db *repository.Repository
 }
 
 func (s *RepositoryTestSuite) SetupTest() {
-	db, err := repository.New()
+	db, err := repository.New(inMemoryDatabase)
 	s.NoError(err)
 
 	err = db.Migrate()

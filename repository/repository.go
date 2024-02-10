@@ -8,8 +8,6 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-const file = ":memory:"
-
 const schema = `
 	PRAGMA foreign_keys = ON;
 
@@ -41,7 +39,7 @@ type Repository struct {
 	db *sql.DB
 }
 
-func New() (*Repository, error) {
+func New(file string) (*Repository, error) {
 	db, err := sql.Open("sqlite", file)
 	if err != nil {
 		return nil, fmt.Errorf("error opening database: %w", err)
