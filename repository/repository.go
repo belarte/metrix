@@ -11,6 +11,8 @@ import (
 const file = ":memory:"
 
 const schema = `
+	PRAGMA foreign_keys = ON;
+
     CREATE TABLE IF NOT EXISTS metrics (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
@@ -18,9 +20,21 @@ const schema = `
         description TEXT NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS entries (
+        metric_id INTEGER NOT NULL,
+        date TEXT NOT NULL,
+        value REAL NOT NULL,
+		PRIMARY KEY (metric_id, date),
+		FOREIGN KEY (metric_id) REFERENCES metrics (id) ON DELETE CASCADE
+    );
+
     INSERT INTO metrics (title, unit, description) VALUES ('Metric 1', 'unit', 'description');
     INSERT INTO metrics (title, unit, description) VALUES ('Metric 2', 'unit', 'description');
     INSERT INTO metrics (title, unit, description) VALUES ('Metric 3', 'unit', 'description');
+
+    INSERT INTO entries (metric_id, value, date) VALUES (1, 5.0, '2018-01-01');
+    INSERT INTO entries (metric_id, value, date) VALUES (2, 2.1, '2018-01-11');
+    INSERT INTO entries (metric_id, value, date) VALUES (1, 1.0, '2018-01-15');
 `
 
 type Repository struct {
@@ -89,4 +103,35 @@ func (d *Repository) UpsertMetric(metric model.Metric) (model.Metric, error) {
 	}
 	metric.ID = int(id)
 	return metric, nil
+}
+
+func (d *Repository) GetEntries() (model.Entries, error) {
+	rows, err := d.db.Query("SELECT metric_id, value, date FROM entries")
+	if err != nil {
+		return nil, fmt.Errorf("error querying entries: %w", err)
+	}
+	defer rows.Close()
+
+	var entries []model.Entry
+	for rows.Next() {
+		var entry model.Entry
+		if err = rows.Scan(&entry.MetricID, &entry.Value, &entry.Date); err != nil {
+			return nil, fmt.Errorf("error scanning entry: %w", err)
+		}
+		entries = append(entries, entry)
+	}
+	return entries, nil
+}
+
+func (d *Repository) UpsertEntry(metricId int, value float64, date string) (model.Entry, error) {
+	_, err := d.db.Exec(
+		"INSERT OR REPLACE INTO entries (metric_id, value, date) VALUES (?, ?, ?)",
+		metricId, value, date,
+	)
+
+	if err != nil {
+		return model.Entry{}, fmt.Errorf("error inserting entry: %w", err)
+	}
+
+	return model.Entry{ID: 0, MetricID: metricId, Value: value, Date: date}, nil
 }
