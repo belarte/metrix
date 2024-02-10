@@ -50,7 +50,7 @@ func (s *RepositoryTestSuite) TestAddNewEntry() {
 	id := 1
 	value := 1.0
 	date := "2018-02-01"
-	expectedEntry := model.NewEntry(0, 1, 1.0, "2018-02-01")
+	expectedEntry := model.NewEntry(1, 1.0, "2018-02-01")
 	expectedSize := 4
 
 	entry, err := s.db.UpsertEntry(id, value, date)
@@ -67,7 +67,7 @@ func (s *RepositoryTestSuite) TestUpdateEntry() {
 	id := 1
 	value := 7.0
 	date := "2018-01-01"
-	expectedEntry := model.NewEntry(0, 1, 7.0, "2018-01-01")
+	expectedEntry := model.NewEntry(1, 7.0, "2018-01-01")
 	expectedSize := 3
 
 	entry, err := s.db.UpsertEntry(id, value, date)

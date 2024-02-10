@@ -133,5 +133,5 @@ func (d *Repository) UpsertEntry(metricId int, value float64, date string) (mode
 		return model.Entry{}, fmt.Errorf("error inserting entry: %w", err)
 	}
 
-	return model.Entry{ID: 0, MetricID: metricId, Value: value, Date: date}, nil
+	return model.Entry{MetricID: metricId, Value: value, Date: date}, nil
 }

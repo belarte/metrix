@@ -20,11 +20,9 @@ func nextIdBuilder(id int) func() int {
 }
 
 var nextMetricId = nextIdBuilder(0)
-var nextEntryId = nextIdBuilder(0)
 
 func NewInMemory() *InMemory {
 	nextMetricId = nextIdBuilder(0)
-	nextEntryId = nextIdBuilder(0)
 
 	return &InMemory{
 		metric: model.Metrics{
@@ -33,9 +31,9 @@ func NewInMemory() *InMemory {
 			{ID: nextMetricId(), Title: "Metric 3", Unit: "unit", Description: "description"},
 		},
 		entries: model.Entries{
-			{ID: nextEntryId(), MetricID: 1, Value: 5.0, Date: "2018-01-01"},
-			{ID: nextEntryId(), MetricID: 2, Value: 2.1, Date: "2018-01-11"},
-			{ID: nextEntryId(), MetricID: 1, Value: 1.0, Date: "2018-01-15"},
+			{MetricID: 1, Value: 5.0, Date: "2018-01-01"},
+			{MetricID: 2, Value: 2.1, Date: "2018-01-11"},
+			{MetricID: 1, Value: 1.0, Date: "2018-01-15"},
 		},
 	}
 }
@@ -95,7 +93,6 @@ func (db *InMemory) UpsertEntry(metricId int, value float64, date string) (model
 	for i, e := range db.entries {
 		if e.MetricID == metricId && e.Date == date {
 			entry := model.Entry{
-				ID:       e.ID,
 				MetricID: metricId,
 				Value:    value,
 				Date:     date,
@@ -106,7 +103,6 @@ func (db *InMemory) UpsertEntry(metricId int, value float64, date string) (model
 	}
 
 	entry := model.Entry{
-		ID:       nextEntryId(),
 		MetricID: metricId,
 		Value:    value,
 		Date:     date,

@@ -131,13 +131,13 @@ func TestDatabaseAddEntry(t *testing.T) {
 		err      error
 	}{
 		"add a new entry": {
-			1, 1.0, "2018-02-01", model.NewEntry(4, 1, 1.0, "2018-02-01"), 4, nil,
+			1, 1.0, "2018-02-01", model.NewEntry(1, 1.0, "2018-02-01"), 4, nil,
 		},
 		"metric does not exist": {
 			-1, 1.0, "2018-02-01", model.Entry{}, 3, database.NewDatabaseError("metric not found"),
 		},
 		"metric already entered for that date": {
-			1, 7.0, "2018-01-01", model.NewEntry(1, 1, 7.0, "2018-01-01"), 3, nil,
+			1, 7.0, "2018-01-01", model.NewEntry(1, 7.0, "2018-01-01"), 3, nil,
 		},
 	}
 
