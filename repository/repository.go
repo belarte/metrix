@@ -133,3 +133,22 @@ func (d *Repository) UpsertEntry(metricId int, value float64, date string) (mode
 
 	return model.Entry{MetricID: metricId, Value: value, Date: date}, nil
 }
+
+func (d *Repository) GetSortedEntriesForMetric(metricId int) (model.Entries, error) {
+	rows, err := d.db.Query("SELECT metric_id, value, date FROM entries WHERE metric_id = ? ORDER BY date", metricId)
+	if err != nil {
+		return nil, fmt.Errorf("error querying entries: %w", err)
+	}
+	defer rows.Close()
+
+	var entries model.Entries
+	for rows.Next() {
+		var entry model.Entry
+		if err = rows.Scan(&entry.MetricID, &entry.Value, &entry.Date); err != nil {
+			return nil, fmt.Errorf("error scanning entry: %w", err)
+		}
+		entries = append(entries, entry)
+	}
+
+	return entries, nil
+}
