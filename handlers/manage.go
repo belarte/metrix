@@ -4,17 +4,16 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/belarte/metrix/database"
 	"github.com/belarte/metrix/model"
 	"github.com/belarte/metrix/views"
 	"github.com/labstack/echo/v4"
 )
 
 type ManageHandler struct {
-	db *database.InMemory
+	db Database
 }
 
-func NewManageHandler(db *database.InMemory) *ManageHandler {
+func NewManageHandler(db Database) *ManageHandler {
 	return &ManageHandler{
 		db: db,
 	}

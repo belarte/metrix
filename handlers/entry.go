@@ -4,17 +4,16 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/belarte/metrix/database"
 	"github.com/belarte/metrix/model"
 	"github.com/belarte/metrix/views"
 	"github.com/labstack/echo/v4"
 )
 
 type EntryHandler struct {
-	db *database.InMemory
+	db Database
 }
 
-func NewEntryHandler(db *database.InMemory) *EntryHandler {
+func NewEntryHandler(db Database) *EntryHandler {
 	return &EntryHandler{
 		db: db,
 	}
@@ -57,7 +56,7 @@ func (h *EntryHandler) Submit(c echo.Context) error {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 
-	_, err := h.db.UpsertEntry(entry.MetricID, entry.Value, entry.Date)
+	_, err := h.db.UpsertEntry(entry)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}

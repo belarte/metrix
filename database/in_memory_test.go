@@ -123,28 +123,26 @@ func TestDatabaseAddMetric(t *testing.T) {
 
 func TestDatabaseAddEntry(t *testing.T) {
 	tests := map[string]struct {
-		metricId int
-		value    float64
-		date     string
-		result   model.Entry
-		size     int
-		err      error
+		input  model.Entry
+		result model.Entry
+		size   int
+		err    error
 	}{
 		"add a new entry": {
-			1, 1.0, "2018-02-01", model.NewEntry(1, 1.0, "2018-02-01"), 4, nil,
+			model.NewEntry(1, 1.0, "2018-02-01"), model.NewEntry(1, 1.0, "2018-02-01"), 4, nil,
 		},
 		"metric does not exist": {
-			-1, 1.0, "2018-02-01", model.Entry{}, 3, database.NewDatabaseError("metric not found"),
+			model.NewEntry(-1, 1.0, "2018-02-01"), model.Entry{}, 3, database.NewDatabaseError("metric not found"),
 		},
 		"metric already entered for that date": {
-			1, 7.0, "2018-01-01", model.NewEntry(1, 7.0, "2018-01-01"), 3, nil,
+			model.NewEntry(1, 7.0, "2018-01-01"), model.NewEntry(1, 7.0, "2018-01-01"), 3, nil,
 		},
 	}
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			db := database.NewInMemory()
-			entry, err := db.UpsertEntry(test.metricId, test.value, test.date)
+			entry, err := db.UpsertEntry(test.input)
 			entries, _ := db.GetEntries()
 			assert.Equal(t, test.err, err)
 			assert.Equal(t, test.result, entry)

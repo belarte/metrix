@@ -4,17 +4,16 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/belarte/metrix/database"
 	"github.com/belarte/metrix/diagram"
 	"github.com/belarte/metrix/views"
 	"github.com/labstack/echo/v4"
 )
 
 type ReportsHandler struct {
-	db *database.InMemory
+	db Database
 }
 
-func NewReportsHandler(db *database.InMemory) *ReportsHandler {
+func NewReportsHandler(db Database) *ReportsHandler {
 	return &ReportsHandler{
 		db: db,
 	}

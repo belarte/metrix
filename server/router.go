@@ -3,18 +3,17 @@ package server
 import (
 	"context"
 
-	"github.com/belarte/metrix/database"
 	"github.com/belarte/metrix/handlers"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 type Server struct {
-	db *database.InMemory
+	db handlers.Database
 	e  *echo.Echo
 }
 
-func New(db *database.InMemory) *Server {
+func New(db handlers.Database) *Server {
 	manageHandler := handlers.NewManageHandler(db)
 	entryHandler := handlers.NewEntryHandler(db)
 	reportsHandler := handlers.NewReportsHandler(db)

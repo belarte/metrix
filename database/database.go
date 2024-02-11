@@ -38,7 +38,7 @@ func NewInMemory() *InMemory {
 	}
 }
 
-func (db *InMemory) GetMetrics() ([]model.Metric, error) {
+func (db *InMemory) GetMetrics() (model.Metrics, error) {
 	return db.metric, nil
 }
 
@@ -77,11 +77,12 @@ func (e DatabaseError) Error() string {
 	return e.message
 }
 
-func (db *InMemory) GetEntries() ([]model.Entry, error) {
+func (db *InMemory) GetEntries() (model.Entries, error) {
 	return db.entries, nil
 }
 
-func (db *InMemory) UpsertEntry(metricId int, value float64, date string) (model.Entry, error) {
+func (db *InMemory) UpsertEntry(entry model.Entry) (model.Entry, error) {
+	metricId := entry.MetricID
 	found := false
 	for _, m := range db.metric {
 		found = found || (m.ID == metricId)
@@ -91,27 +92,17 @@ func (db *InMemory) UpsertEntry(metricId int, value float64, date string) (model
 	}
 
 	for i, e := range db.entries {
-		if e.MetricID == metricId && e.Date == date {
-			entry := model.Entry{
-				MetricID: metricId,
-				Value:    value,
-				Date:     date,
-			}
+		if e.MetricID == metricId && e.Date == entry.Date {
 			db.entries[i] = entry
 			return entry, nil
 		}
 	}
 
-	entry := model.Entry{
-		MetricID: metricId,
-		Value:    value,
-		Date:     date,
-	}
 	db.entries = append(db.entries, entry)
 	return entry, nil
 }
 
-func (db *InMemory) GetSortedEntriesForMetric(metricId int) ([]model.Entry, error) {
+func (db *InMemory) GetSortedEntriesForMetric(metricId int) (model.Entries, error) {
 	entries := []model.Entry{}
 	for _, e := range db.entries {
 		if e.MetricID == metricId {
