@@ -10,11 +10,26 @@ import (
 )
 
 type Server struct {
-	db *repository.Repository
-	e  *echo.Echo
+	db      *repository.Repository
+	e       *echo.Echo
+	address string
 }
 
-func New(db *repository.Repository) *Server {
+type Option func(*Server)
+
+func WithAddress(addr string) Option {
+	return func(s *Server) {
+		s.address = addr
+	}
+}
+
+func WithRepository(db *repository.Repository) Option {
+	return func(s *Server) {
+		s.db = db
+	}
+}
+
+func newServer(db *repository.Repository) *echo.Echo {
 	manageHandler := handlers.NewManageHandler(db)
 	entryHandler := handlers.NewEntryHandler(db)
 	reportsHandler := handlers.NewReportsHandler(db)
@@ -33,14 +48,21 @@ func New(db *repository.Repository) *Server {
 	e.GET("/reports", reportsHandler.Reports)
 	e.GET("/reports/select", reportsHandler.Select)
 
-	return &Server{
-		db: db,
-		e:  e,
-	}
+	return e
 }
 
-func (s *Server) Start(addr string) error {
-	return s.e.Start(addr)
+func New(options ...Option) *Server {
+	s := &Server{}
+	for _, option := range options {
+		option(s)
+	}
+
+	s.e = newServer(s.db)
+	return s
+}
+
+func (s *Server) Start() error {
+	return s.e.Start(s.address)
 }
 
 func (s *Server) Stop() error {

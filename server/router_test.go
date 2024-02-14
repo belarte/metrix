@@ -60,9 +60,12 @@ func (s *RouterTestSuite) SetupTest() {
 	s.NoError(err)
 
 	s.db = db
-	s.server = server.New(db)
+	s.server = server.New(
+		server.WithRepository(db),
+		server.WithAddress(address),
+	)
 	go func() {
-		err := s.server.Start(address)
+		err := s.server.Start()
 		s.ErrorIs(err, http.ErrServerClosed)
 	}()
 }

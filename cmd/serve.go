@@ -22,7 +22,7 @@ var serverCmd = &cobra.Command{
 			return fmt.Errorf("could not migrate database: %w", err)
 		}
 
-		return server.New(db).Start(":8080")
+		return server.New(server.WithRepository(db), server.WithAddress(":8080")).Start()
 	},
 }
 
