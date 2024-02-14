@@ -70,7 +70,6 @@ var (
 		},
 	}
 	metricToCreate = model.Metric{
-		ID:          4,
 		Title:       "Metric 4",
 		Unit:        "Unit 4",
 		Description: "description",

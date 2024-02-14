@@ -58,7 +58,7 @@ func (d *Repository) Close() error {
 	return d.db.Close()
 }
 
-func (d *Repository) GetMetrics() ([]model.Metric, error) {
+func (d *Repository) GetMetrics() (model.Metrics, error) {
 	rows, err := d.db.Query("SELECT id, title, unit, description FROM metrics")
 	if err != nil {
 		return nil, fmt.Errorf("error querying metrics: %w", err)
@@ -88,18 +88,29 @@ func (d *Repository) GetMetric(id int) (model.Metric, error) {
 }
 
 func (d *Repository) UpsertMetric(metric model.Metric) (model.Metric, error) {
-	res, err := d.db.Exec(
-		"INSERT OR REPLACE INTO metrics (id, title, unit, description) VALUES (?, ?, ?, ?)",
-		metric.ID, metric.Title, metric.Unit, metric.Description,
-	)
-	if err != nil {
-		return model.Metric{}, fmt.Errorf("error inserting metric: %w", err)
+	if metric.ID == 0 {
+		res, err := d.db.Exec(
+			"INSERT INTO metrics (title, unit, description) VALUES (?, ?, ?) RETURNING id",
+			&metric.Title, &metric.Unit, &metric.Description,
+		)
+		if err != nil {
+			return model.Metric{}, fmt.Errorf("error inserting metric: %w", err)
+		}
+		var id int64
+		if id, err = res.LastInsertId(); err != nil {
+			return model.Metric{}, fmt.Errorf("error getting last insert ID: %w", err)
+		}
+		metric.ID = int(id)
+	} else {
+		_, err := d.db.Exec(
+			"UPDATE metrics SET title = ?, unit = ?, description = ? WHERE id = ?",
+			&metric.Title, &metric.Unit, &metric.Description, &metric.ID,
+		)
+		if err != nil {
+			return model.Metric{}, fmt.Errorf("error updating metric: %w", err)
+		}
 	}
-	var id int64
-	if id, err = res.LastInsertId(); err != nil {
-		return model.Metric{}, fmt.Errorf("error getting last insert ID: %w", err)
-	}
-	metric.ID = int(id)
+
 	return metric, nil
 }
 
@@ -121,17 +132,17 @@ func (d *Repository) GetEntries() (model.Entries, error) {
 	return entries, nil
 }
 
-func (d *Repository) UpsertEntry(metricId int, value float64, date string) (model.Entry, error) {
+func (d *Repository) UpsertEntry(entry model.Entry) (model.Entry, error) {
 	_, err := d.db.Exec(
 		"INSERT OR REPLACE INTO entries (metric_id, value, date) VALUES (?, ?, ?)",
-		metricId, value, date,
+		&entry.MetricID, &entry.Value, &entry.Date,
 	)
 
 	if err != nil {
 		return model.Entry{}, fmt.Errorf("error inserting entry: %w", err)
 	}
 
-	return model.Entry{MetricID: metricId, Value: value, Date: date}, nil
+	return entry, nil
 }
 
 func (d *Repository) GetSortedEntriesForMetric(metricId int) (model.Entries, error) {

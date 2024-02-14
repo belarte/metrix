@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/belarte/metrix/database"
+	"github.com/belarte/metrix/repository"
 	"github.com/belarte/metrix/server"
 	"github.com/playwright-community/playwright-go"
 	"github.com/stretchr/testify/suite"
@@ -19,6 +19,7 @@ type RouterTestSuite struct {
 	context playwright.BrowserContext
 	page    playwright.Page
 	server  *server.Server
+	db      *repository.Repository
 }
 
 func (s *RouterTestSuite) SetupSuite() {
@@ -52,7 +53,14 @@ func (s *RouterTestSuite) TearDownSuite() {
 }
 
 func (s *RouterTestSuite) SetupTest() {
-	s.server = server.New(database.NewInMemory())
+	db, err := repository.New(":memory:")
+	s.NoError(err)
+
+	err = db.Migrate()
+	s.NoError(err)
+
+	s.db = db
+	s.server = server.New(db)
 	go func() {
 		err := s.server.Start(address)
 		s.ErrorIs(err, http.ErrServerClosed)
@@ -61,6 +69,9 @@ func (s *RouterTestSuite) SetupTest() {
 
 func (s *RouterTestSuite) TearDownTest() {
 	err := s.server.Stop()
+	s.NoError(err)
+
+	err = s.db.Close()
 	s.NoError(err)
 }
 

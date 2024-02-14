@@ -51,13 +51,11 @@ func (s *RepositoryTestSuite) TestUpdateMetric() {
 }
 
 func (s *RepositoryTestSuite) TestAddNewEntry() {
-	id := 1
-	value := 1.0
-	date := "2018-02-01"
+	input := model.NewEntry(1, 1.0, "2018-02-01")
 	expectedEntry := model.NewEntry(1, 1.0, "2018-02-01")
 	expectedSize := 4
 
-	entry, err := s.db.UpsertEntry(id, value, date)
+	entry, err := s.db.UpsertEntry(input)
 	s.NoError(err)
 
 	entries, err := s.db.GetEntries()
@@ -68,13 +66,11 @@ func (s *RepositoryTestSuite) TestAddNewEntry() {
 }
 
 func (s *RepositoryTestSuite) TestUpdateEntry() {
-	id := 1
-	value := 7.0
-	date := "2018-01-01"
+	input := model.NewEntry(1, 7.0, "2018-01-01")
 	expectedEntry := model.NewEntry(1, 7.0, "2018-01-01")
 	expectedSize := 3
 
-	entry, err := s.db.UpsertEntry(id, value, date)
+	entry, err := s.db.UpsertEntry(input)
 	s.NoError(err)
 
 	entries, err := s.db.GetEntries()
@@ -85,12 +81,10 @@ func (s *RepositoryTestSuite) TestUpdateEntry() {
 }
 
 func (s *RepositoryTestSuite) TestAddEntryWhenMetricDoesNotExist() {
-	id := -1
-	value := 1.0
-	date := "2018-02-01"
+	input := model.NewEntry(-1, 1.0, "2018-02-01")
 	expectedEntry := model.Entry{}
 
-	entry, err := s.db.UpsertEntry(id, value, date)
+	entry, err := s.db.UpsertEntry(input)
 	s.Error(err)
 	s.Equal(expectedEntry, entry)
 }
@@ -102,15 +96,15 @@ func (s *RepositoryTestSuite) TestGetEntriesForMetricInOrder() {
 	s.NoError(err)
 
 	metricId := m.ID
-	_, err = s.db.UpsertEntry(metricId, 1.0, "2020-01-05")
+	_, err = s.db.UpsertEntry(model.NewEntry(metricId, 1.0, "2020-01-05"))
 	s.NoError(err)
-	_, err = s.db.UpsertEntry(metricId, 2.0, "2020-01-04")
+	_, err = s.db.UpsertEntry(model.NewEntry(metricId, 2.0, "2020-01-04"))
 	s.NoError(err)
-	_, err = s.db.UpsertEntry(metricId, 3.0, "2020-01-07")
+	_, err = s.db.UpsertEntry(model.NewEntry(metricId, 3.0, "2020-01-07"))
 	s.NoError(err)
-	_, err = s.db.UpsertEntry(metricId, 4.0, "2020-01-05")
+	_, err = s.db.UpsertEntry(model.NewEntry(metricId, 4.0, "2020-01-05"))
 	s.NoError(err)
-	_, err = s.db.UpsertEntry(metricId, 5.0, "2020-01-09")
+	_, err = s.db.UpsertEntry(model.NewEntry(metricId, 5.0, "2020-01-09"))
 	s.NoError(err)
 
 	metrics, err := s.db.GetSortedEntriesForMetric(metricId)
