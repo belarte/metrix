@@ -5,15 +5,16 @@ import (
 	"strconv"
 
 	"github.com/belarte/metrix/model"
+	"github.com/belarte/metrix/repository"
 	"github.com/belarte/metrix/views"
 	"github.com/labstack/echo/v4"
 )
 
 type ManageHandler struct {
-	db Database
+	db *repository.Repository
 }
 
-func NewManageHandler(db Database) *ManageHandler {
+func NewManageHandler(db *repository.Repository) *ManageHandler {
 	return &ManageHandler{
 		db: db,
 	}

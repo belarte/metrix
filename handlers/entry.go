@@ -5,15 +5,16 @@ import (
 	"strconv"
 
 	"github.com/belarte/metrix/model"
+	"github.com/belarte/metrix/repository"
 	"github.com/belarte/metrix/views"
 	"github.com/labstack/echo/v4"
 )
 
 type EntryHandler struct {
-	db Database
+	db *repository.Repository
 }
 
-func NewEntryHandler(db Database) *EntryHandler {
+func NewEntryHandler(db *repository.Repository) *EntryHandler {
 	return &EntryHandler{
 		db: db,
 	}

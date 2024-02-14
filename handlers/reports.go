@@ -5,15 +5,16 @@ import (
 	"strconv"
 
 	"github.com/belarte/metrix/diagram"
+	"github.com/belarte/metrix/repository"
 	"github.com/belarte/metrix/views"
 	"github.com/labstack/echo/v4"
 )
 
 type ReportsHandler struct {
-	db Database
+	db *repository.Repository
 }
 
-func NewReportsHandler(db Database) *ReportsHandler {
+func NewReportsHandler(db *repository.Repository) *ReportsHandler {
 	return &ReportsHandler{
 		db: db,
 	}
