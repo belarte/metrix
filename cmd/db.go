@@ -7,27 +7,34 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const file = "dev.sqlite"
+const (
+	file = "bin/dev.sqlite"
+)
 
 var dbCmd = &cobra.Command{
 	Use:   "db",
 	Short: "Database operations",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		db, err := repository.New(file)
-		if err != nil {
-			return fmt.Errorf("error opening database: %w", err)
+		if len(args) == 0 {
+			return fmt.Errorf("no command specified")
 		}
 
-		metrics, err := db.GetMetrics()
-		if err != nil {
-			return fmt.Errorf("error getting metrics: %w", err)
-		}
+		switch args[0] {
+		case "migrate":
+			db, err := repository.New(file)
+			if err != nil {
+				return fmt.Errorf("error opening database: %w", err)
+			}
 
-		for _, m := range metrics {
-			fmt.Printf("%s (%s): %s\n", m.Title, m.Unit, m.Description)
-		}
+			err = db.Migrate()
+			if err != nil {
+				return fmt.Errorf("error migrating database: %w", err)
+			}
 
-		return err
+			return err
+		default:
+			return fmt.Errorf("unknown command: %s", args[0])
+		}
 	},
 }
 
