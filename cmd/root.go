@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var database string
@@ -15,7 +16,9 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVarP(&database, "database", "d", inMemoryDatabase, "path to the database")
+	viper.BindEnv("METRIX_DB")
+	viper.SetDefault("METRIX_DB", inMemoryDatabase)
+	rootCmd.PersistentFlags().StringVarP(&database, "database", "d", viper.GetString("METRIX_DB"), "path to the database")
 }
 
 func Execute() {
