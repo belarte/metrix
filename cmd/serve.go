@@ -8,6 +8,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	defaultAddress   = ":8080"
+	inMemoryDatabase = ":memory:"
+)
+
 var serverCmd = &cobra.Command{
 	Use:   "serve",
 	Short: "Start the server",
@@ -21,8 +26,11 @@ var serverCmd = &cobra.Command{
 		}
 		defer db.Close()
 
-		if err = db.Migrate(); err != nil {
-			return fmt.Errorf("could not migrate database: %w", err)
+		if dbPath == inMemoryDatabase {
+			fmt.Println("Using in-memory database")
+			if err = db.Migrate(); err != nil {
+				return fmt.Errorf("could not migrate database: %w", err)
+			}
 		}
 
 		return server.New(server.WithRepository(db), server.WithAddress(addr)).Start()
@@ -32,6 +40,6 @@ var serverCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(serverCmd)
 
-	serverCmd.Flags().StringP("address", "a", ":8080", "address to listen to")
-	serverCmd.Flags().StringP("database", "d", ":memory:", "path to the database")
+	serverCmd.Flags().StringP("address", "a", defaultAddress, "address to listen to")
+	serverCmd.Flags().StringP("database", "d", inMemoryDatabase, "path to the database")
 }
