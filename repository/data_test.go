@@ -3,25 +3,27 @@ package repository_test
 import "github.com/belarte/metrix/model"
 
 var (
-	initial = model.Metrics{
+	initialMetrics = model.Metrics{
 		{
-			ID:          1,
 			Title:       "Metric 1",
 			Unit:        "unit",
 			Description: "description",
 		},
 		{
-			ID:          2,
 			Title:       "Metric 2",
 			Unit:        "unit",
 			Description: "description",
 		},
 		{
-			ID:          3,
 			Title:       "Metric 3",
 			Unit:        "unit",
 			Description: "description",
 		},
+	}
+	initialEntries = model.Entries{
+		model.NewEntry(1, 5.0, "2018-01-01"),
+		model.NewEntry(2, 2.1, "2018-01-11"),
+		model.NewEntry(1, 1.0, "2018-01-15"),
 	}
 	afterInsertion = model.Metrics{
 		{

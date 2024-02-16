@@ -17,11 +17,32 @@ type RepositoryTestSuite struct {
 	db *repository.Repository
 }
 
+func populateDatabase(db *repository.Repository) error {
+	for _, metric := range initialMetrics {
+		_, err := db.UpsertMetric(metric)
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, entry := range initialEntries {
+		_, err := db.UpsertEntry(entry)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (s *RepositoryTestSuite) SetupTest() {
 	db, err := repository.New(inMemoryDatabase)
 	s.NoError(err)
 
 	err = db.Migrate()
+	s.NoError(err)
+
+	err = populateDatabase(db)
 	s.NoError(err)
 
 	s.db = db

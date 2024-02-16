@@ -14,11 +14,3 @@ CREATE TABLE IF NOT EXISTS entries (
 	PRIMARY KEY (metric_id, date),
 	FOREIGN KEY (metric_id) REFERENCES metrics (id) ON DELETE CASCADE
 );
-
-INSERT INTO metrics (title, unit, description) VALUES ('Metric 1', 'unit', 'description');
-INSERT INTO metrics (title, unit, description) VALUES ('Metric 2', 'unit', 'description');
-INSERT INTO metrics (title, unit, description) VALUES ('Metric 3', 'unit', 'description');
-
-INSERT INTO entries (metric_id, value, date) VALUES (1, 5.0, '2018-01-01');
-INSERT INTO entries (metric_id, value, date) VALUES (2, 2.1, '2018-01-11');
-INSERT INTO entries (metric_id, value, date) VALUES (1, 1.0, '2018-01-15');

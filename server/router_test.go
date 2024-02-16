@@ -4,13 +4,57 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/belarte/metrix/model"
 	"github.com/belarte/metrix/repository"
 	"github.com/belarte/metrix/server"
 	"github.com/playwright-community/playwright-go"
 	"github.com/stretchr/testify/suite"
 )
 
-var address = "127.0.0.1:12345"
+const address string = "127.0.0.1:12345"
+
+var (
+	initialMetrics = model.Metrics{
+		{
+			Title:       "Metric 1",
+			Unit:        "unit",
+			Description: "description",
+		},
+		{
+			Title:       "Metric 2",
+			Unit:        "unit",
+			Description: "description",
+		},
+		{
+			Title:       "Metric 3",
+			Unit:        "unit",
+			Description: "description",
+		},
+	}
+	initialEntries = model.Entries{
+		model.NewEntry(1, 5.0, "2018-01-01"),
+		model.NewEntry(2, 2.1, "2018-01-11"),
+		model.NewEntry(1, 1.0, "2018-01-15"),
+	}
+)
+
+func populateDatabase(db *repository.Repository) error {
+	for _, metric := range initialMetrics {
+		_, err := db.UpsertMetric(metric)
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, entry := range initialEntries {
+		_, err := db.UpsertEntry(entry)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
 
 type RouterTestSuite struct {
 	suite.Suite
@@ -57,6 +101,9 @@ func (s *RouterTestSuite) SetupTest() {
 	s.NoError(err)
 
 	err = db.Migrate()
+	s.NoError(err)
+
+	err = populateDatabase(db)
 	s.NoError(err)
 
 	s.db = db
