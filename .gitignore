@@ -28,3 +28,6 @@ bin/
 
 # database files
 *.sqlite
+
+# environment file
+.envrc
