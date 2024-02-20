@@ -18,7 +18,7 @@ var entryParams = components.SelectParams{
 
 templ EntryPage(metrics model.Metrics) {
 	@layout() {
-		<h5>Add an entry</h5>
+		<h5>Manage entries</h5>
 		@components.Select(FromMetrics(metrics, model.Metric{}), entryParams)
 		<article id="entry-content">
 			Please select a metric.
@@ -43,4 +43,35 @@ templ EntryForm(selected model.Metric) {
 
 templ EntryCreated() {
 	<p>Entry submitted successfully!</p>
+}
+
+templ EntriesTable(metricId int, entries model.Entries) {
+	<table>
+		<thead>
+			<tr>
+				<th>Date</th>
+				<th>Value</th>
+			</tr>
+		</thead>
+		<tbody id="entry-table-body">
+			<tr>
+				<td><input form="submit-entry" type="date" name="date" title="date" id="date" required/></td>
+				<td><input form="submit-entry" type="number" name="value" id="value" step="any" placeholder="Value" required/></td>
+				<td><button form="submit-entry" type="submit">Add</button></td>
+			</tr>
+			for _, entry := range entries {
+				@Row(entry)
+			}
+		</tbody>
+	</table>
+	<form id="submit-entry" hx-post="/entry/submit" hx-target="#entry-table-body" hx-swap="beforeend">
+		<input type="hidden" name="metric" value={ strconv.Itoa(metricId) }/>
+	</form>
+}
+
+templ Row(entry model.Entry) {
+	<tr>
+		<td>{ entry.Date }</td>
+		<td>{ strconv.FormatFloat(entry.Value, 'f', 2, 64) }</td>
+	</tr>
 }

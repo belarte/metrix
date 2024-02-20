@@ -178,17 +178,14 @@ func (s *RouterTestSuite) TestUpdateMetric() {
 		VerifyForm("Metric 2", "new unit", "new description")
 }
 
-func (s *RouterTestSuite) TestAddingEntryIsVisibleInReport() {
+func (s *RouterTestSuite) TestAddingEntry() {
 	s.LoadPage()
-
-	GoToReportsPage(s.page, s.T()).
-		Select("Metric 1").
-		OpenEntriesList().
-		VerifyEntriesCount(2)
 
 	GoToEntryPage(s.page, s.T()).
 		Select("Metric 1").
-		AddEntry("2021-01-01", "7,0")
+		VerifyEntriesCount(2).
+		AddEntry("2021-01-01", "7,0").
+		VerifyEntriesCount(3)
 
 	GoToReportsPage(s.page, s.T()).
 		Select("Metric 1").

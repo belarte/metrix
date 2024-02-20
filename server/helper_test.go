@@ -51,7 +51,7 @@ type ManagePage struct {
 }
 
 func GoToManagePage(page playwright.Page, t *testing.T) *ManagePage {
-	goToPage(page, t, "Manage", "Manage metrics")
+	goToPage(page, t, "Metrics", "Manage metrics")
 	return &ManagePage{page: page, t: t}
 }
 
@@ -107,7 +107,7 @@ type EntryPage struct {
 }
 
 func GoToEntryPage(page playwright.Page, t *testing.T) *EntryPage {
-	goToPage(page, t, "Entry", "Add an entry")
+	goToPage(page, t, "Entry", "Manage entries")
 	return &EntryPage{page: page, t: t}
 }
 
@@ -117,13 +117,21 @@ func (p *EntryPage) Select(title string) *EntryPage {
 }
 
 func (p *EntryPage) AddEntry(date, value string) *EntryPage {
-	err := p.page.GetByText("Value in").PressSequentially(value)
+	err := p.page.GetByPlaceholder("Value").PressSequentially(value)
 	assert.NoError(p.t, err)
 
-	err = p.page.GetByText("Date").Fill(date)
+	err = p.page.GetByTitle("date").Fill(date)
 	assert.NoError(p.t, err)
 
-	submit(p.page, p.t, "Submit", "Entry submitted successfully!")
+	submit(p.page, p.t, "Add", "Add")
+	return p
+}
+
+func (p *EntryPage) VerifyEntriesCount(expectedCount int) *EntryPage {
+	count, err := p.page.Locator("table tbody tr").Count()
+	assert.NoError(p.t, err)
+	assert.Equal(p.t, expectedCount, count-1)
+
 	return p
 }
 
@@ -157,11 +165,11 @@ func (p *ReportsPage) VerifyEntriesCount(expectedCount int) *ReportsPage {
 }
 
 func (p *ReportsPage) VerifyEntry(date, value string) *ReportsPage {
-    err := p.page.GetByText(date).WaitFor()
-    assert.NoError(p.t, err)
+	err := p.page.GetByText(date).WaitFor()
+	assert.NoError(p.t, err)
 
-    err = p.page.GetByText(value).WaitFor()
-    assert.NoError(p.t, err)
+	err = p.page.GetByText(value).WaitFor()
+	assert.NoError(p.t, err)
 
 	return p
 }

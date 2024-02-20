@@ -44,7 +44,12 @@ func (h *EntryHandler) Select(c echo.Context) error {
 			return c.String(http.StatusInternalServerError, err.Error())
 		}
 
-		form := views.EntryForm(metric)
+		entries, err := h.db.GetSortedEntriesForMetric(id)
+		if err != nil {
+			return c.String(http.StatusInternalServerError, err.Error())
+		}
+
+		form := views.EntriesTable(metric.ID, entries)
 		return render(c, form)
 	}
 
@@ -57,11 +62,11 @@ func (h *EntryHandler) Submit(c echo.Context) error {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 
-	_, err := h.db.UpsertEntry(entry)
+	upserted, err := h.db.UpsertEntry(entry)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
-	res := views.EntryCreated()
+	res := views.Row(upserted)
 	return render(c, res)
 }
