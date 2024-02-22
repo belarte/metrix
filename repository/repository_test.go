@@ -110,6 +110,24 @@ func (s *RepositoryTestSuite) TestAddEntryWhenMetricDoesNotExist() {
 	s.Equal(expectedEntry, entry)
 }
 
+func (s *RepositoryTestSuite) TestDeleteExistingEntry() {
+	entries, err := s.db.GetSortedEntriesForMetric(1)
+	s.NoError(err)
+	s.Equal(2, len(entries))
+
+	err = s.db.DeleteEntry(1, "2018-01-01")
+	s.NoError(err)
+
+	entries, err = s.db.GetSortedEntriesForMetric(1)
+	s.NoError(err)
+	s.Equal(1, len(entries))
+}
+
+func (s *RepositoryTestSuite) TestCannotDeleteNonExistingEntry() {
+	err := s.db.DeleteEntry(999, "2184-11-27")
+	s.Error(err)
+}
+
 func (s *RepositoryTestSuite) TestGetEntriesForMetricInOrder() {
 	metric := model.Metric{Title: "Title", Unit: "Unit", Description: "Description"}
 

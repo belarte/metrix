@@ -122,6 +122,20 @@ func (d *Repository) UpsertEntry(entry model.Entry) (model.Entry, error) {
 	return entry, nil
 }
 
+func (d *Repository) DeleteEntry(metricId int, date string) error {
+	res, err := d.db.Exec("DELETE FROM entries WHERE metric_id = ? AND date = ?", metricId, date)
+	if err != nil {
+		return fmt.Errorf("error deleting entry: %w", err)
+	}
+
+	count, err := res.RowsAffected()
+	if err != nil || count == 0 {
+		return fmt.Errorf("error deleting entry: %w", err)
+	}
+
+	return nil
+}
+
 func (d *Repository) GetSortedEntriesForMetric(metricId int) (model.Entries, error) {
 	rows, err := d.db.Query("SELECT metric_id, value, date FROM entries WHERE metric_id = ? ORDER BY date", metricId)
 	if err != nil {
