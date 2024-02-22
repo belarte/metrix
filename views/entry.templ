@@ -5,6 +5,7 @@ import (
 
 	"github.com/belarte/metrix/model"
 	"github.com/belarte/metrix/views/components"
+	"fmt"
 )
 
 var entryParams = components.SelectParams{
@@ -53,7 +54,7 @@ templ EntriesTable(metricId int, entries model.Entries) {
 				<th>Value</th>
 			</tr>
 		</thead>
-		<tbody id="entry-table-body">
+		<tbody id="entry-table-body" hx-target="closest tr" hx-swap="outerHTML">
 			<tr>
 				<td><input form="submit-entry" type="date" name="date" title="date" id="date" required/></td>
 				<td><input form="submit-entry" type="number" name="value" id="value" step="any" placeholder="Value" required/></td>
@@ -73,5 +74,10 @@ templ Row(entry model.Entry) {
 	<tr>
 		<td>{ entry.Date }</td>
 		<td>{ strconv.FormatFloat(entry.Value, 'f', 2, 64) }</td>
+		<td>
+			<a hx-delete={ fmt.Sprintf("/entry/delete/%d/%s", entry.MetricID, entry.Date) }>
+				<i class="fa fa-trash"></i>
+			</a>
+		</td>
 	</tr>
 }

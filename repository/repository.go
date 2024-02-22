@@ -125,12 +125,12 @@ func (d *Repository) UpsertEntry(entry model.Entry) (model.Entry, error) {
 func (d *Repository) DeleteEntry(metricId int, date string) error {
 	res, err := d.db.Exec("DELETE FROM entries WHERE metric_id = ? AND date = ?", metricId, date)
 	if err != nil {
-		return fmt.Errorf("error deleting entry: %w", err)
+		return fmt.Errorf("error querying the database to delete the entry: %w", err)
 	}
 
 	count, err := res.RowsAffected()
-	if err != nil || count == 0 {
-		return fmt.Errorf("error deleting entry: %w", err)
+	if err != nil || count != 1 {
+		return fmt.Errorf("error deleting entry, rows affected = %d: %w", count, err)
 	}
 
 	return nil

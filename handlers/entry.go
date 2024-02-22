@@ -70,3 +70,21 @@ func (h *EntryHandler) Submit(c echo.Context) error {
 	res := views.Row(upserted)
 	return render(c, res)
 }
+
+type deleteEntryParams struct {
+	MetricID int    `param:"metric_id"`
+	Date     string `param:"date"`
+}
+
+func (h *EntryHandler) Delete(c echo.Context) error {
+	var params deleteEntryParams
+	if err := c.Bind(&params); err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+
+	if err := h.db.DeleteEntry(params.MetricID, params.Date); err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.NoContent(http.StatusOK)
+}
