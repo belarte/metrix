@@ -71,6 +71,17 @@ func (s *RepositoryTestSuite) TestUpdateMetric() {
 	s.ElementsMatch(metrics, afterUpdate)
 }
 
+func (s *RepositoryTestSuite) TestGetExistingEntry() {
+	entry, err := s.db.GetEntry(1, "2018-01-01")
+	s.NoError(err)
+	s.Equal(initialEntries[0], entry)
+}
+
+func (s *RepositoryTestSuite) TestGetNonExistingEntry() {
+	_, err := s.db.GetEntry(999, "2018-01-01")
+	s.Error(err)
+}
+
 func (s *RepositoryTestSuite) TestAddNewEntry() {
 	input := model.NewEntry(1, 1.0, "2018-02-01")
 	expectedEntry := model.NewEntry(1, 1.0, "2018-02-01")

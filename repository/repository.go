@@ -91,6 +91,17 @@ func (d *Repository) UpsertMetric(metric model.Metric) (model.Metric, error) {
 	return metric, nil
 }
 
+func (d *Repository) GetEntry(metricId int, date string) (model.Entry, error) {
+	row := d.db.QueryRow("SELECT metric_id, value, date FROM entries WHERE metric_id = ? AND date = ?", metricId, date)
+
+	var entry model.Entry
+	if err := row.Scan(&entry.MetricID, &entry.Value, &entry.Date); err != nil {
+		return model.Entry{}, fmt.Errorf("error scanning entry: %w", err)
+	}
+
+	return entry, nil
+}
+
 func (d *Repository) GetEntries() (model.Entries, error) {
 	rows, err := d.db.Query("SELECT metric_id, value, date FROM entries")
 	if err != nil {
