@@ -76,6 +76,51 @@ type deleteEntryParams struct {
 	Date     string `param:"date"`
 }
 
+func (h *EntryHandler) GetEntry(c echo.Context) error {
+	var params deleteEntryParams
+	if err := c.Bind(&params); err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+
+	entry, err := h.db.GetEntry(params.MetricID, params.Date)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+
+	res := views.Row(entry)
+	return render(c, res)
+}
+
+func (h *EntryHandler) UpdateEntry(c echo.Context) error {
+	var entry model.Entry
+	if err := c.Bind(&entry); err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+
+	upserted, err := h.db.UpsertEntry(entry)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+
+	res := views.Row(upserted)
+	return render(c, res)
+}
+
+func (h *EntryHandler) GetEditableEntry(c echo.Context) error {
+	var params deleteEntryParams
+	if err := c.Bind(&params); err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+
+	entry, err := h.db.GetEntry(params.MetricID, params.Date)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+
+	res := views.EditableRow(entry)
+	return render(c, res)
+}
+
 func (h *EntryHandler) Delete(c echo.Context) error {
 	var params deleteEntryParams
 	if err := c.Bind(&params); err != nil {

@@ -75,9 +75,42 @@ templ Row(entry model.Entry) {
 		<td>{ entry.Date }</td>
 		<td>{ strconv.FormatFloat(entry.Value, 'f', 2, 64) }</td>
 		<td>
+			<a hx-get={ fmt.Sprintf("/entry/edit/%d/%s", entry.MetricID, entry.Date) } data-tooltip="Edit this entry">
+				<i class="fa fa-edit"></i>
+			</a>
 			<a hx-delete={ fmt.Sprintf("/entry/delete/%d/%s", entry.MetricID, entry.Date) } data-tooltip="Delete this entry">
 				<i class="fa fa-trash"></i>
 			</a>
 		</td>
+	</tr>
+}
+
+templ EditableRow(entry model.Entry) {
+	<tr>
+		<td>{ entry.Date }</td>
+		<td><input form="edit-row" type="number" name="value" step="any" placeholder="Value" value={ strconv.FormatFloat(entry.Value, 'f', 2, 64) }/></td>
+		<td>
+			<p style="display: flex; justify-content: center; align-items: center;">
+				<button
+					style="display: flex; width: 20px; height: 20px; margin: 1; padding: 0;"
+					form="edit-row"
+					type="submit"
+					data-tooltip="Validate"
+				>
+					<i class="fa fa-check"></i>
+				</button>
+				<button
+					style="display: flex; width: 20px; height: 20px; margin: 1; padding: 0;"
+					hx-get={ fmt.Sprintf("/entry/%d/%s", entry.MetricID, entry.Date) }
+					data-tooltip="Cancel"
+				>
+					<i class="fa fa-close"></i>
+				</button>
+			</p>
+		</td>
+		<form id="edit-row" hx-put={ fmt.Sprintf("/entry/%d/%s", entry.MetricID, entry.Date) }>
+			<input type="hidden" name="metric" value={ strconv.Itoa(entry.MetricID) }/>
+			<input type="hidden" name="date" value={ entry.Date }/>
+		</form>
 	</tr>
 }
