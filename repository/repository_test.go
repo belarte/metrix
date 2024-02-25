@@ -71,6 +71,31 @@ func (s *RepositoryTestSuite) TestUpdateMetric() {
 	s.ElementsMatch(metrics, afterUpdate)
 }
 
+func (s *RepositoryTestSuite) TestDeleteMetric() {
+	_, err := s.db.GetMetric(1)
+	s.NoError(err)
+
+	entriesBefore, err := s.db.GetSortedEntriesForMetric(1)
+	s.NoError(err)
+
+	err = s.db.DeleteMetric(1)
+	s.NoError(err)
+
+	_, err = s.db.GetMetric(1)
+	s.Error(err)
+
+	entriesAfter, err := s.db.GetSortedEntriesForMetric(1)
+	s.NoError(err)
+
+	s.Equal(2, len(entriesBefore))
+	s.Equal(0, len(entriesAfter))
+}
+
+func (s *RepositoryTestSuite) TestCannotDeleteNonExistingMetric() {
+	err := s.db.DeleteMetric(999)
+	s.Error(err)
+}
+
 func (s *RepositoryTestSuite) TestGetExistingEntry() {
 	entry, err := s.db.GetEntry(1, "2018-01-01")
 	s.NoError(err)

@@ -91,6 +91,18 @@ func (d *Repository) UpsertMetric(metric model.Metric) (model.Metric, error) {
 	return metric, nil
 }
 
+func (d *Repository) DeleteMetric(id int) error {
+	res, err := d.db.Exec("DELETE FROM metrics WHERE id = ?", id)
+	if err != nil {
+		return fmt.Errorf("error querying the database to delete the metric: %w", err)
+	}
+	count, err := res.RowsAffected()
+	if err != nil || count != 1 {
+		return fmt.Errorf("error deleting metric, rows affected = %d: %w", count, err)
+	}
+	return nil
+}
+
 func (d *Repository) GetEntry(metricId int, date string) (model.Entry, error) {
 	row := d.db.QueryRow("SELECT metric_id, value, date FROM entries WHERE metric_id = ? AND date = ?", metricId, date)
 
