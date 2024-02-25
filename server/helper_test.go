@@ -32,7 +32,7 @@ func submit(page playwright.Page, t *testing.T, button, confirmation string) {
 	assert.NoError(t, err)
 
 	err = page.GetByText(confirmation).WaitFor()
-	assert.NoError(t, err)
+	assert.NoError(t, err, "Cannot see confirmation '%s' after clicking on '%s'", confirmation, button)
 }
 
 type HomePage struct {

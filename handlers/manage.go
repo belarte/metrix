@@ -46,9 +46,11 @@ func (handler *ManageHandler) Submit(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
-	additionnalMessage := "Metric created!"
-	if metric.ID == upsertedMetric.ID {
-		additionnalMessage = "Metric updated!"
+	additionnalMessage := "Metric updated!"
+	buttonLabel := submitButtonUpdate
+	if metric.ID == 0 {
+		additionnalMessage = "Metric created!"
+		buttonLabel = submitButtonCreate
 	}
 
 	metrics, err := handler.db.GetMetrics()
@@ -56,7 +58,7 @@ func (handler *ManageHandler) Submit(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
-	page := views.Manage(metrics, upsertedMetric, submitButtonCreate, additionnalMessage)
+	page := views.Manage(metrics, upsertedMetric, buttonLabel, additionnalMessage)
 	return render(c, page)
 }
 
