@@ -27,9 +27,10 @@ templ Select(options Options, params SelectParams) {
 }
 
 templ option(o Option) {
-	if o.IsSelected {
-		<option value={ o.Value } selected>{ o.Label }</option>
-	} else {
-		<option value={ o.Value }>{ o.Label }</option>
-	}
+	<option
+		value={ o.Value }
+		if o.IsSelected {
+			selected
+		}
+	>{ o.Label }</option>
 }
