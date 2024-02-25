@@ -30,7 +30,7 @@ templ Manage(metrics model.Metrics, selected model.Metric, btnLabel, additionalM
 			<small>{ additionalMessage }</small>
 		</div>
 		<article>
-			<form hx-post="/manage/submit" hx-target="#manage-content">
+			<form hx-post="/manage/submit" hx-target="#manage-content" hx-swap="outerHTML">
 				<input type="hidden" id="id" name="id" value={ strconv.Itoa(selected.ID) }/>
 				<label for="title">Title</label>
 				<input type="text" id="title" name="title" placeholder="Title" value={ selected.Title } required/>
