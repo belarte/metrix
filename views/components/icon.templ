@@ -1,0 +1,17 @@
+package components
+
+templ Icon(icon, tooltip string, attrs templ.Attributes) {
+	<button
+		style="display: flex; width: 20px; height: 20px; margin: 1; padding: 0;"
+		{ attrs... }
+		data-tooltip={ tooltip }
+	>
+		<i class={ icon }></i>
+	</button>
+}
+
+templ IconGroup() {
+	<p style="display: flex; justify-content: center; align-items: center;">
+		{ children... }
+	</p>
+}
