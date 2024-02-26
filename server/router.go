@@ -40,6 +40,7 @@ func newServer(db *repository.Repository) *echo.Echo {
 
 	e.GET("/", handlers.HomeHandler)
 	e.GET("/manage", manageHandler.Manage)
+	e.DELETE("/manage/:id", manageHandler.Delete)
 	e.POST("/manage/submit", manageHandler.Submit)
 	e.GET("/manage/select", manageHandler.Select)
 	e.GET("/entry", entryHandler.Entry)

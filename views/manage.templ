@@ -1,6 +1,7 @@
 package views
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/belarte/metrix/model"
@@ -40,6 +41,15 @@ templ Manage(metrics model.Metrics, selected model.Metric, btnLabel, additionalM
 				<input type="text" id="description" name="description" placeholder="Description" value={ selected.Description } required/>
 				<button type="submit">{ btnLabel }</button>
 			</form>
+			if selected.ID > 0 {
+				<button
+					hx-delete={ fmt.Sprintf("/manage/%d", selected.ID) }
+					hx-target="#manage-content"
+					hx-swap="outerHTML"
+					type="button"
+					style="background-color: #f44336"
+				>Delete</button>
+			}
 		</article>
 	</div>
 }

@@ -35,6 +35,26 @@ func (handler *ManageHandler) Manage(c echo.Context) error {
 	return render(c, page)
 }
 
+func (handler *ManageHandler) Delete(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+
+	err = handler.db.DeleteMetric(id)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+
+	metrics, err := handler.db.GetMetrics()
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+
+	component := views.Manage(metrics, model.Metric{}, submitButtonCreate, "")
+	return render(c, component)
+}
+
 func (handler *ManageHandler) Submit(c echo.Context) error {
 	var metric model.Metric
 	if err := c.Bind(&metric); err != nil {
