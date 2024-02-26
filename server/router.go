@@ -47,7 +47,7 @@ func newServer(db *repository.Repository) *echo.Echo {
 	e.POST("/entry/submit", entryHandler.Submit)
 	e.GET("/entry/:metric_id/:date", entryHandler.GetEntry)
 	e.PUT("/entry/:metric_id/:date", entryHandler.UpdateEntry)
-	e.DELETE("/entry/delete/:metric_id/:date", entryHandler.Delete)
+	e.DELETE("/entry/:metric_id/:date", entryHandler.Delete)
 	e.GET("/entry/edit/:metric_id/:date", entryHandler.GetEditableEntry)
 	e.GET("/reports", reportsHandler.Reports)
 	e.GET("/reports/select", reportsHandler.Select)

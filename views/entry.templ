@@ -78,7 +78,7 @@ templ Row(entry model.Entry) {
 			<a hx-get={ fmt.Sprintf("/entry/edit/%d/%s", entry.MetricID, entry.Date) } data-tooltip="Edit this entry">
 				<i class="fa fa-edit"></i>
 			</a>
-			<a hx-delete={ fmt.Sprintf("/entry/delete/%d/%s", entry.MetricID, entry.Date) } data-tooltip="Delete this entry">
+			<a hx-delete={ fmt.Sprintf("/entry/%d/%s", entry.MetricID, entry.Date) } data-tooltip="Delete this entry">
 				<i class="fa fa-trash"></i>
 			</a>
 		</td>
