@@ -25,8 +25,8 @@ var (
 	submitButtonUpdate = "Update"
 )
 
-func (handler *ManageHandler) Manage(c echo.Context) error {
-	metrics, err := handler.db.GetMetrics()
+func (h *ManageHandler) Manage(c echo.Context) error {
+	metrics, err := h.db.GetMetrics()
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
@@ -35,33 +35,27 @@ func (handler *ManageHandler) Manage(c echo.Context) error {
 	return render(c, page)
 }
 
-func (handler *ManageHandler) Delete(c echo.Context) error {
+func (h *ManageHandler) Delete(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 
-	err = handler.db.DeleteMetric(id)
+	err = h.db.DeleteMetric(id)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
-	metrics, err := handler.db.GetMetrics()
-	if err != nil {
-		return c.String(http.StatusInternalServerError, err.Error())
-	}
-
-	component := views.Manage(metrics, model.Metric{}, submitButtonCreate, "")
-	return render(c, component)
+	return h.renderManageComponent(c, model.Metric{}, submitButtonCreate, "")
 }
 
-func (handler *ManageHandler) Submit(c echo.Context) error {
+func (h *ManageHandler) Submit(c echo.Context) error {
 	var metric model.Metric
 	if err := c.Bind(&metric); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 
-	upsertedMetric, err := handler.db.UpsertMetric(metric)
+	upsertedMetric, err := h.db.UpsertMetric(metric)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
@@ -73,16 +67,10 @@ func (handler *ManageHandler) Submit(c echo.Context) error {
 		buttonLabel = submitButtonCreate
 	}
 
-	metrics, err := handler.db.GetMetrics()
-	if err != nil {
-		return c.String(http.StatusInternalServerError, err.Error())
-	}
-
-	page := views.Manage(metrics, upsertedMetric, buttonLabel, additionnalMessage)
-	return render(c, page)
+	return h.renderManageComponent(c, upsertedMetric, buttonLabel, additionnalMessage)
 }
 
-func (handler *ManageHandler) Select(c echo.Context) error {
+func (h *ManageHandler) Select(c echo.Context) error {
 	var metric model.Metric
 	label := submitButtonCreate
 
@@ -92,7 +80,7 @@ func (handler *ManageHandler) Select(c echo.Context) error {
 			return c.String(http.StatusBadRequest, err.Error())
 		}
 
-		metric, err = handler.db.GetMetric(id)
+		metric, err = h.db.GetMetric(id)
 		if err != nil {
 			return c.String(http.StatusInternalServerError, err.Error())
 		}
@@ -100,11 +88,15 @@ func (handler *ManageHandler) Select(c echo.Context) error {
 		label = submitButtonUpdate
 	}
 
-	metrics, err := handler.db.GetMetrics()
+	return h.renderManageComponent(c, metric, label, "")
+}
+
+func (h *ManageHandler) renderManageComponent(c echo.Context, m model.Metric, label, message string) error {
+	metrics, err := h.db.GetMetrics()
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
-	page := views.Manage(metrics, metric, label, "")
-	return render(c, page)
+	component := views.Manage(metrics, m, label, message)
+	return render(c, component)
 }
