@@ -1,8 +1,23 @@
 package components
 
+css iconClass() {
+	display: flex;
+	width: 20px;
+	height: 20px;
+	margin: 1;
+	padding: 0;
+}
+
+css iconGroupClass() {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 0;
+}
+
 templ Icon(icon, tooltip string, attrs templ.Attributes) {
 	<button
-		style="display: flex; width: 20px; height: 20px; margin: 1; padding: 0;"
+		class={ iconClass() }
 		{ attrs... }
 		data-tooltip={ tooltip }
 	>
@@ -11,7 +26,7 @@ templ Icon(icon, tooltip string, attrs templ.Attributes) {
 }
 
 templ IconGroup() {
-	<p style="display: flex; justify-content: center; align-items: center;">
+	<p class={ iconGroupClass() }>
 		{ children... }
 	</p>
 }
