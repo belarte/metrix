@@ -42,14 +42,34 @@ templ Manage(metrics model.Metrics, selected model.Metric, btnLabel, additionalM
 				<button type="submit">{ btnLabel }</button>
 			</form>
 			if selected.ID > 0 {
+				<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 				<button
+					id="delete-button"
 					hx-delete={ fmt.Sprintf("/manage/%d", selected.ID) }
 					hx-target="#manage-content"
 					hx-swap="outerHTML"
+					hx-trigger="confirmed"
 					type="button"
 					style="background-color: #f44336"
+					onclick={ confirmation("delete-button", selected.Title) }
 				>Delete</button>
 			}
 		</article>
 	</div>
+}
+
+script confirmation(id, metric string) {
+    const button = document.getElementById(id);
+    const event = {
+        title: `Delete metric "${metric}"?`,
+        text: 'This action cannot be undone.',
+        showCancelButton: true,
+        cancelButtonText: 'Cancel',
+    }
+
+    Swal.fire(event).then(function(result) {
+        if(result.isConfirmed) {
+            htmx.trigger(button, 'confirmed');  
+        } 
+    })
 }
