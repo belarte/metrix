@@ -21,6 +21,11 @@ func New(file string) (*Repository, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error opening database: %w", err)
 	}
+
+	if _, err := db.Exec("PRAGMA foreign_keys = ON"); err != nil {
+		return nil, fmt.Errorf("error enabling foreign key support: %w", err)
+	}
+
 	return &Repository{db: db}, nil
 }
 
