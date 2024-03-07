@@ -5,6 +5,7 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/belarte/metrix/model"
 	"github.com/belarte/metrix/repository"
 	"github.com/spf13/cobra"
 )
@@ -64,29 +65,30 @@ var dbListEntriesCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		log.Println("Listing entries", database)
 
-		if len(args) != 1 {
-			return fmt.Errorf("missing metric ID")
-		}
-
-		metricID, err := strconv.Atoi(args[0])
-		if err != nil {
-			return fmt.Errorf("invalid metric ID: %w", err)
-		}
-
 		db, err := repository.New(database)
 		if err != nil {
 			return fmt.Errorf("error opening database: %w", err)
 		}
 
-		entries, err := db.GetSortedEntriesForMetric(metricID)
-		if err != nil {
-			return fmt.Errorf("error listing entries: %w", err)
+		var entries model.Entries
+		if len(args) == 0 {
+			entries, err = db.GetEntries()
+			if err != nil {
+				return fmt.Errorf("error listing entries: %w", err)
+			}
+		} else {
+			metricID, err := strconv.Atoi(args[0])
+			if err != nil {
+				return fmt.Errorf("invalid metric ID: %w", err)
+			}
+
+			entries, err = db.GetSortedEntriesForMetric(metricID)
+			if err != nil {
+				return fmt.Errorf("error listing entries: %w", err)
+			}
 		}
 
-		fmt.Println("Date       Value")
-		for _, entry := range entries {
-			fmt.Printf("%s %.2f\n", entry.Date, entry.Value)
-		}
+		fmt.Println(entries)
 		return err
 	},
 }
