@@ -27,25 +27,6 @@ templ EntryPage(metrics model.Metrics) {
 	}
 }
 
-templ EntryForm(selected model.Metric) {
-	<form hx-post="/entry/submit" hx-target="#entry-content">
-		<input type="hidden" name="metric" value={ strconv.Itoa(selected.ID) }/>
-		<label for="value">
-			Value in { selected.Unit }
-			<input type="number" step="any" id="value" name="value" required/>
-		</label>
-		<label for="date">
-			Date
-			<input type="date" id="date" name="date" required/>
-		</label>
-		<button type="submit">Submit</button>
-	</form>
-}
-
-templ EntryCreated() {
-	<p>Entry submitted successfully!</p>
-}
-
 templ EntriesTable(metricId int, entries model.Entries) {
 	<table>
 		<thead>
