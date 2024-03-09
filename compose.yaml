@@ -5,3 +5,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    volumes:
+      - ./bin/:/db
+    environment:
+        METRIX_DB: "/db/prod.sqlite"
+        METRIX_ADDRESS: ":8080"
