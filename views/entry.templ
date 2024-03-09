@@ -46,7 +46,7 @@ templ EntriesTable(metricId int, entries model.Entries) {
 			}
 		</tbody>
 	</table>
-	<form id="submit-entry" hx-post="/entry/submit" hx-target="#entry-table-body" hx-swap="beforeend">
+	<form id="submit-entry" hx-post="/entry/submit" hx-target="#entry-content">
 		<input type="hidden" name="metric" value={ strconv.Itoa(metricId) }/>
 	</form>
 }
