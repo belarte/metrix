@@ -71,13 +71,8 @@ func (h *EntryHandler) Submit(c echo.Context) error {
 	return render(c, res)
 }
 
-type deleteEntryParams struct {
-	MetricID int    `param:"metric_id"`
-	Date     string `param:"date"`
-}
-
 func (h *EntryHandler) GetEntry(c echo.Context) error {
-	var params deleteEntryParams
+	var params model.Entry
 	if err := c.Bind(&params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -107,7 +102,7 @@ func (h *EntryHandler) UpdateEntry(c echo.Context) error {
 }
 
 func (h *EntryHandler) GetEditableEntry(c echo.Context) error {
-	var params deleteEntryParams
+	var params model.Entry
 	if err := c.Bind(&params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
@@ -122,7 +117,7 @@ func (h *EntryHandler) GetEditableEntry(c echo.Context) error {
 }
 
 func (h *EntryHandler) Delete(c echo.Context) error {
-	var params deleteEntryParams
+	var params model.Entry
 	if err := c.Bind(&params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
