@@ -11,4 +11,9 @@ test: generate
 	go test ./...  -fullpath
 
 docker:
-	docker-compose up --build
+	docker compose up --build
+
+migrate-prod:
+	go run main.go db migrate -d bin/prod.sqlite
+
+run-prod: migrate-prod docker
